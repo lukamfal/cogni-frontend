@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { api, HealthLog } from '@/lib/api'
 import { EMPTY, HealthEntry, MOODS, MOVES, dayKey, fromLog, moodEmoji, toInput, weekDays } from '@/lib/health'
 import { toast } from '@/lib/games'
+import MedicationManager from '@/components/MedicationManager'
 
 export default function SaudePage() {
   const [h, setH] = useState<HealthEntry>(EMPTY)
@@ -24,7 +25,12 @@ export default function SaudePage() {
   const save = async () => {
     setSaving(true)
     try {
-      const saved = await api.health.save(toInput(h))
+      // If today already exists (e.g. from the check-in or a medication), change only these
+      // fields, so the medication record is kept.
+      const input = toInput(h)
+      const exists = logs?.some(l => l.log_date === input.log_date)
+      const { log_date, ...fields } = input
+      const saved = exists ? await api.health.patch(log_date, fields) : await api.health.save(input)
       setLogs(prev => [...(prev ?? []).filter(l => l.log_date !== saved.log_date), saved])
       toast('Registro de hoje salvo.')
     } catch {
@@ -107,6 +113,8 @@ export default function SaudePage() {
         {saving ? 'Salvando...' : 'Salvar registro de hoje'}
       </button>
       <p className="note">Quem você autorizou em Ajustes também vê este registro.</p>
+
+      <MedicationManager />
     </div>
   )
 }

@@ -128,8 +128,11 @@ export const api = {
   health: {
     today: () => request<HealthLog | null>('/health/today'),
     history: (days = 7) => request<HealthLog[]>(`/health/history?days=${days}`),
+    /** Creates or replaces the whole day. Use patch to change some fields of an existing day. */
     save: (data: HealthLogInput) =>
       request<HealthLog>('/health/log', { method: 'POST', body: JSON.stringify(data) }),
+    patch: (date: string, data: Partial<Omit<HealthLogInput, 'log_date'>>) =>
+      request<HealthLog>(`/health/log/${date}`, { method: 'PATCH', body: JSON.stringify(data) }),
   },
 
   // ── Care (family following a player) ───────────────
@@ -160,6 +163,8 @@ export interface HealthLogInput {
   sleep_hours: number
   mood: Mood | null
   notes: string | null
+  medication_taken?: boolean
+  medication_notes?: string | null
 }
 
 export interface HealthLog extends HealthLogInput {

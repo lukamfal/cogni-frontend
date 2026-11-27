@@ -11,6 +11,11 @@ const KEY_STEP = { memory: 1, math: 1, face: 2, word: 2 } as const
 
 const doneKey =(userId: number) => `cogni_tutorial_done_${userId}`
 
+/** Whether this person already went through the tutorial on this device. */
+export function tutorialDone(userId: number) {
+  try { return localStorage.getItem(doneKey(userId)) === '1' } catch { return true }
+}
+
 /** Forget that the tutorial was seen, so it opens again on the home screen. */
 export function resetTutorial(userId: number) {
   try { localStorage.removeItem(doneKey(userId)) } catch {}
