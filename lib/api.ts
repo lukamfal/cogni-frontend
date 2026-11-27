@@ -20,24 +20,29 @@ async function request<T>(
 
   if (!res.ok) {
     const err = await res.json().catch(() => ({ detail: 'Erro desconhecido' }))
-    throw new Error(err.detail || 'Erro na requisição')
+    throw new Error(typeof err.detail === 'string' ? err.detail : 'Erro na requisição')
   }
+  if (res.status === 204) return undefined as T
   return res.json()
 }
 
+// ── Auth ──────────────────────────────────────────────
 export const api = {
   auth: {
-    register: (data: { name: string; email: string; password: string; role?: string }) =>
+    register: (data: { name: string; email: string; password: string; role: Role }) =>
       request<{ access_token: string; user: User }>('/auth/register', {
         method: 'POST', body: JSON.stringify(data),
       }),
+
     login: (email: string, password: string) =>
       request<{ access_token: string; user: User }>('/auth/login', {
         method: 'POST', body: JSON.stringify({ email, password }),
       }),
+
     me: () => request<User>('/profiles/me'),
   },
 
+  // ── Scores ─────────────────────────────────────────
   scores: {
     summary: () => request<Summary>('/scores/summary'),
     history: (game_type?: string) =>
@@ -45,9 +50,11 @@ export const api = {
     best: () => request<BestScore[]>('/scores/best'),
   },
 
+  // ── Games ──────────────────────────────────────────
   games: {
     suggestDifficulty: (game_type: string) =>
       request<{ suggested_difficulty: string }>(`/games/suggest-difficulty/${game_type}`),
+
     memory: {
       start: (difficulty: string) =>
         request<MemoryConfig>('/games/memory/start', {
@@ -58,6 +65,7 @@ export const api = {
           method: 'POST', body: JSON.stringify(data),
         }),
     },
+
     math: {
       start: (difficulty: string) =>
         request<MathQuestion>('/games/math/start', {
@@ -70,6 +78,7 @@ export const api = {
           method: 'POST', body: JSON.stringify(data),
         }),
     },
+
     face: {
       start: (difficulty: string) =>
         request<FaceGameStart>('/games/face/start', {
@@ -80,6 +89,7 @@ export const api = {
           method: 'POST', body: JSON.stringify(data),
         }),
     },
+
     word: {
       start: (difficulty: string) =>
         request<WordGameStart>('/games/word/start', {
@@ -92,36 +102,105 @@ export const api = {
     },
   },
 
-  health: {
-    today: () => request<HealthLog | null>('/health/today'),
-    upsert: (data: Partial<HealthLog> & { log_date: string }) =>
-      request<HealthLog>('/health/log', { method: 'POST', body: JSON.stringify(data) }),
-    patch: (date: string, data: Partial<HealthLog>) =>
-      request<HealthLog>(`/health/log/${date}`, { method: 'PATCH', body: JSON.stringify(data) }),
-    history: (days = 30) => request<HealthLog[]>(`/health/history?days=${days}`),
-    summary: () => request<HealthSummary>('/health/summary'),
-  },
-
+  // ── Family ─────────────────────────────────────────
   family: {
     list: () => request<FamilyMember[]>('/family/'),
-    add: (formData: FormData) => {
+    add: async (formData: FormData): Promise<FamilyMember> => {
       const token = getToken()
-      return fetch(`${API_URL}/family/`, {
+      const res = await fetch(`${API_URL}/family/`, {
         method: 'POST',
         headers: token ? { Authorization: `Bearer ${token}` } : {},
         body: formData,
-      }).then(r => r.json()) as Promise<FamilyMember>
+      })
+      const body = await res.json().catch(() => ({}))
+      if (!res.ok) {
+        // FastAPI sends a string, or a list of field errors for 422s.
+        const detail = typeof body.detail === 'string' ? body.detail : 'Não foi possível salvar o familiar.'
+        throw new Error(detail)
+      }
+      return body
     },
     delete: (id: number) =>
       request(`/family/${id}`, { method: 'DELETE' }),
   },
+
+  // ── Health ─────────────────────────────────────────
+  health: {
+    today: () => request<HealthLog | null>('/health/today'),
+    history: (days = 7) => request<HealthLog[]>(`/health/history?days=${days}`),
+    save: (data: HealthLogInput) =>
+      request<HealthLog>('/health/log', { method: 'POST', body: JSON.stringify(data) }),
+  },
+
+  // ── Care (family following a player) ───────────────
+  care: {
+    // Caregiver side
+    request: (elder_email: string) =>
+      request<{ detail: string }>('/care/requests', { method: 'POST', body: JSON.stringify({ elder_email }) }),
+    following: () => request<FollowingLink[]>('/care/following'),
+    overview: (elderId: number) => request<ElderOverview>(`/care/elders/${elderId}/overview`),
+    // Player side
+    incoming: () => request<IncomingRequest[]>('/care/requests'),
+    accept: (id: number) => request<Follower>(`/care/requests/${id}/accept`, { method: 'POST' }),
+    decline: (id: number) => request(`/care/requests/${id}/decline`, { method: 'POST' }),
+    followers: () => request<Follower[]>('/care/followers'),
+    // Either side
+    remove: (id: number) => request(`/care/links/${id}`, { method: 'DELETE' }),
+  },
+}
+
+// ── Types ─────────────────────────────────────────────
+export type Role = 'elder' | 'caregiver'
+
+export type Mood = 'great' | 'good' | 'neutral' | 'bad' | 'awful'
+
+export interface HealthLogInput {
+  log_date: string
+  water_cups: number
+  sleep_hours: number
+  mood: Mood | null
+  notes: string | null
+}
+
+export interface HealthLog extends HealthLogInput {
+  id: number
+  exercise_minutes: number
+}
+
+export interface HealthSummary {
+  avg_water_cups: number
+  avg_sleep_hours: number
+  most_common_mood: Mood | null
+  logs_this_week: number
+}
+
+export interface FollowingLink {
+  id: number
+  status: 'pending' | 'accepted'
+  elder_email: string
+  elder_id: number | null
+  elder_name: string | null
+  created_at: string | null
+  accepted_at: string | null
+}
+
+export interface IncomingRequest { id: number; caregiver_name: string; caregiver_email: string; created_at: string | null }
+export interface Follower { id: number; caregiver_name: string; caregiver_email: string; accepted_at: string | null }
+
+export interface ElderOverview {
+  elder_id: number
+  elder_name: string
+  summary: Summary
+  recent_sessions: GameSession[]
+  health_summary: HealthSummary
+  health_week: HealthLog[]
 }
 
 export interface User {
   id: number
   name: string
   email: string
-  role: 'elder' | 'caregiver'
+  role: Role
   avatar_url: string | null
   is_active: boolean
   created_at: string
@@ -190,6 +269,9 @@ export interface WordQuestion {
   hint: string
   options: string[]
   time_limit_seconds: number
+  /** Hidden letters, left to right. Only sent by backends that include the answers. */
+  correct_letters?: string[]
+  full_word?: string
 }
 
 export interface WordGameStart {
@@ -203,34 +285,6 @@ export interface FamilyMember {
   relation: string
   photo_url: string | null
   created_at: string
-}
-
-export interface HealthLog {
-  id?: number
-  user_id?: number
-  log_date: string
-  water_cups: number
-  water_goal: number
-  steps: number
-  steps_goal: number
-  exercise_minutes: number
-  sleep_hours: number
-  mood: 'great' | 'good' | 'neutral' | 'bad' | 'awful' | null
-  medication_taken: boolean
-  medication_notes: string | null
-  notes: string | null
-  created_at?: string
-  updated_at?: string | null
-}
-
-export interface HealthSummary {
-  avg_water_cups: number
-  avg_sleep_hours: number
-  avg_steps: number
-  avg_exercise_minutes: number
-  medication_adherence: number
-  most_common_mood: string | null
-  logs_this_week: number
 }
 
 export interface FinishPayload {

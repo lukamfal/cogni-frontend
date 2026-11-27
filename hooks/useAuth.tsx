@@ -1,14 +1,17 @@
 'use client'
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
-import { api, User } from '@/lib/api'
+import { api, Role, User } from '@/lib/api'
+
+/** Where each kind of account lands after signing in. */
+export const homeFor = (user: Pick<User, 'role'>) => (user.role === 'caregiver' ? '/acompanhar' : '/dashboard')
 import { useRouter } from 'next/navigation'
 
 interface AuthContextType {
   user: User | null
   loading: boolean
   login: (email: string, password: string) => Promise<void>
-  register: (name: string, email: string, password: string) => Promise<void>
+  register: (name: string, email: string, password: string, role: Role) => Promise<void>
   logout: () => void
 }
 
@@ -32,14 +35,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const res = await api.auth.login(email, password)
     localStorage.setItem('cogni_token', res.access_token)
     setUser(res.user)
-    router.push('/dashboard')
+    router.push(homeFor(res.user))
   }
 
-  const register = async (name: string, email: string, password: string) => {
-    const res = await api.auth.register({ name, email, password })
+  const register = async (name: string, email: string, password: string, role: Role) => {
+    const res = await api.auth.register({ name, email, password, role })
     localStorage.setItem('cogni_token', res.access_token)
     setUser(res.user)
-    router.push('/dashboard')
+    router.push(homeFor(res.user))
   }
 
   const logout = () => {
