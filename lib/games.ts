@@ -1,4 +1,4 @@
-export type GameId = 'memory' | 'math' | 'face' | 'word'
+export type GameId = 'memory' | 'math' | 'face' | 'word' | 'race' | 'tug'
 
 export interface GameMeta {
   id: GameId
@@ -62,6 +62,30 @@ export const GAMES: Record<GameId, GameMeta> = {
       'Leia a dica para ajudar.',
       'Toque nas letras que faltam, na ordem.',
       'Errou a letra? Use “Apagar letra” antes de completar.',
+    ],
+  },
+  race: {
+    id: 'race', icon: '🏎️', name: 'Corrida', tag: 'Reflexo', tags: ['Reflexo', 'Atenção'],
+    short: 'Largue quando o sinal ficar verde',
+    long: 'Espere o semáforo ficar verde e toque o mais rápido que puder para o seu carro ganhar a corrida. Treina atenção e reflexo.',
+    color: 'var(--race-color)', bg: 'var(--race-bg)', href: '/jogos/corrida',
+    howTo: [
+      'O semáforo acende vermelho e depois amarelo.',
+      'Quando ficar verde, toque na tela o mais rápido que puder.',
+      'Quem reagir primeiro chega antes na linha de chegada.',
+      'Tocou antes do verde? A largada é repetida, sem problema.',
+    ],
+  },
+  tug: {
+    id: 'tug', icon: '🪢', name: 'Cabo de Guerra', tag: 'Agilidade', tags: ['Agilidade', 'Coordenação'],
+    short: 'Toque rápido para puxar a corda',
+    long: 'Toque no botão várias vezes para puxar a corda para o seu lado antes do tempo acabar. Treina agilidade e coordenação.',
+    color: 'var(--tug-color)', bg: 'var(--tug-bg)', href: '/jogos/cabo-de-guerra',
+    howTo: [
+      'Espere a contagem 3, 2, 1.',
+      'Toque no botão PUXAR várias vezes seguidas.',
+      'Cada toque puxa a corda para o seu lado.',
+      'Faça 30 toques antes do tempo acabar para vencer.',
     ],
   },
 }

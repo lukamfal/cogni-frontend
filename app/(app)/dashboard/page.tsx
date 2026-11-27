@@ -10,7 +10,7 @@ import { api, Summary, BestScore, GameSession } from '@/lib/api'
 import { GAMES, GAME_LIST, DIFF_LABELS, GameId, isSameDay } from '@/lib/games'
 
 const DAILY_GOAL = 3
-const PLAN_ORDER: GameId[] = ['math', 'word', 'face', 'memory']
+const PLAN_ORDER: GameId[] = ['math', 'word', 'race', 'face', 'memory', 'tug']
 
 export default function DashboardPage() {
   const { user } = useAuth()
