@@ -1,0 +1,1260 @@
+<title>CogniMente</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Instrument+Serif:ital@0;1&display=swap">
+<style>
+/* Layout: same system as the Next.js app — sticky top nav, 900px centred column, bottom tab bar on phones */
+:root {
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --gray-50: #f8f9f8;
+  --gray-100: #f1f3f1;
+  --gray-200: #e6e9e6;
+  --gray-300: #cfd4cf;
+  --ink: #0a0a0a;
+  --ink-inverse: #ffffff;
+  --text-secondary: #555a55;
+  --text-muted: #8f958f;
+  --accent: #1a6b3c;
+  --accent-mid: #2d8a52;
+  --accent-light: #e8f5ee;
+  --nav-bg: rgba(255,255,255,0.92);
+  --memory-color: #3a7bd5; --memory-bg: #eaf0fb;
+  --math-color: #c06a2e;   --math-bg: #fdf0e6;
+  --face-color: #b5507a;   --face-bg: #faeaf2;
+  --word-color: #1a6b3c;   --word-bg: #e8f5ee;
+  --good: #1a7f45; --good-bg: #e6f6ec;
+  --bad: #b91c1c;  --bad-bg: #fef2f2; --bad-border: #fca5a5;
+  --hint-bg: #fffbeb; --hint-border: #fde68a;
+  --shadow: 0 2px 12px rgba(0,0,0,0.08);
+  --font-display: 'Instrument Serif', Georgia, 'Times New Roman', serif;
+  --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --radius: 16px; --radius-sm: 10px; --radius-lg: 24px; --radius-xl: 32px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d0f0e; --surface: #151816; --gray-50: #121513; --gray-100: #1c201d; --gray-200: #2a2f2b; --gray-300: #3d443f;
+    --ink: #f3f5f3; --ink-inverse: #0d0f0e; --text-secondary: #b4bab5; --text-muted: #7d847e;
+    --accent: #4fbf7d; --accent-mid: #6dd096; --accent-light: #15281c; --nav-bg: rgba(13,15,14,0.9);
+    --memory-color: #7aa7f0; --memory-bg: #17223a; --math-color: #e89a5f; --math-bg: #2e1f13;
+    --face-color: #e584ad; --face-bg: #301a24; --word-color: #4fbf7d; --word-bg: #15281c;
+    --good: #5fd08f; --good-bg: #133020; --bad: #f87171; --bad-bg: #2d1414; --bad-border: #7f2a2a;
+    --hint-bg: #2a2410; --hint-border: #5c4d1a; --shadow: 0 2px 14px rgba(0,0,0,0.5);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d0f0e; --surface: #151816; --gray-50: #121513; --gray-100: #1c201d; --gray-200: #2a2f2b; --gray-300: #3d443f;
+  --ink: #f3f5f3; --ink-inverse: #0d0f0e; --text-secondary: #b4bab5; --text-muted: #7d847e;
+  --accent: #4fbf7d; --accent-mid: #6dd096; --accent-light: #15281c; --nav-bg: rgba(13,15,14,0.9);
+  --memory-color: #7aa7f0; --memory-bg: #17223a; --math-color: #e89a5f; --math-bg: #2e1f13;
+  --face-color: #e584ad; --face-bg: #301a24; --word-color: #4fbf7d; --word-bg: #15281c;
+  --good: #5fd08f; --good-bg: #133020; --bad: #f87171; --bad-bg: #2d1414; --bad-border: #7f2a2a;
+  --hint-bg: #2a2410; --hint-border: #5c4d1a; --shadow: 0 2px 14px rgba(0,0,0,0.5);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 17px; }
+body { font-family: var(--font-body); background: var(--bg); color: var(--ink); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 60; background: var(--nav-bg); }
+a { color: inherit; text-decoration: none; }
+h1, h2, h3 { font-family: var(--font-display); font-weight: 400; line-height: 1.1; letter-spacing: -0.02em; text-wrap: balance; }
+button { font-family: var(--font-body); font-size: 0.95rem; font-weight: 600; cursor: pointer; border: none; min-height: 48px; transition: all .18s ease; color: inherit; background: none; }
+button:active { transform: scale(0.98); }
+button:disabled { cursor: default; }
+:focus-visible { outline: 2.5px solid var(--accent); outline-offset: 2px; }
+input, select { font-family: var(--font-body); font-size: 1rem; }
+
+@keyframes fadeUp { from { opacity: .6; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@keyframes pop { 0% { transform: scale(.94); } 70% { transform: scale(1.02); } 100% { transform: scale(1); } }
+@keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-7px); } 50% { transform: translateX(7px); } 75% { transform: translateX(-4px); } }
+.fade-up { animation: fadeUp .45s cubic-bezier(.16,1,.3,1) both; }
+.pop { animation: pop .4s cubic-bezier(.34,1.56,.64,1) both; }
+.shake { animation: shake .4s ease; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+
+.wrap { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.card { background: var(--surface); border: 1px solid var(--gray-200); border-radius: var(--radius); }
+.btn-primary { background: var(--ink); color: var(--ink-inverse); border-radius: var(--radius-sm); padding: 14px 28px; font-weight: 700; width: 100%; }
+.btn-primary:hover { opacity: .88; transform: translateY(-1px); }
+.btn-outline { border: 1.5px solid var(--gray-300); border-radius: var(--radius-sm); padding: 13px 28px; width: 100%; }
+.btn-outline:hover { background: var(--gray-50); }
+.input-field { width: 100%; padding: 14px 16px; border: 1.5px solid var(--gray-200); border-radius: var(--radius-sm); color: var(--ink); background: var(--surface); outline: none; }
+.input-field:focus { border-color: var(--ink); }
+.input-field::placeholder { color: var(--text-muted); }
+.label { font-size: .9rem; font-weight: 700; color: var(--text-secondary); }
+.field { display: flex; flex-direction: column; gap: 6px; }
+.section-label { font-size: .78rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .07em; }
+.page-title { font-size: clamp(1.8rem, 5vw, 2.4rem); }
+.page-sub { color: var(--text-secondary); font-size: .95rem; max-width: 60ch; }
+.stack { display: flex; flex-direction: column; gap: 2rem; }
+.proto-chip { font-size: .66rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--accent); background: var(--accent-light); padding: 3px 8px; border-radius: 6px; }
+.proto-note { text-align: center; font-size: .78rem; color: var(--text-muted); margin-top: 3rem; }
+.toast { position: fixed; z-index: 80; left: 50%; top: calc(80px + env(safe-area-inset-top, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--ink-inverse); padding: 10px 18px; border-radius: 12px; font-weight: 600; font-size: .88rem; box-shadow: var(--shadow); }
+
+/* ---------- Landing ---------- */
+.l-nav { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 50; background: var(--nav-bg); backdrop-filter: blur(12px); border-bottom: 1px solid var(--gray-200); }
+.l-nav-in { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-block: 1rem; max-width: 1100px; margin: 0 auto; }
+.logo { display: flex; align-items: center; gap: 10px; }
+.logo-icon { width: 36px; height: 36px; background: var(--ink); border-radius: 10px; display: grid; place-items: center; font-size: 18px; }
+.logo-text { font-family: var(--font-display); font-size: 1.2rem; }
+.l-links { display: flex; gap: 6px; align-items: center; }
+.l-link { padding: 8px 14px; border-radius: 8px; font-size: .88rem; font-weight: 600; color: var(--text-secondary); min-height: 0; }
+.l-link:hover { background: var(--gray-100); color: var(--ink); }
+.l-cta { padding: 9px 18px; background: var(--ink); color: var(--ink-inverse); border-radius: 10px; font-size: .88rem; font-weight: 700; min-height: 0; }
+.l-hero { max-width: 1100px; margin: 0 auto; padding-block: 4.5rem 3.5rem; display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); gap: 3.5rem; align-items: center; }
+.l-hero-copy { display: flex; flex-direction: column; align-items: flex-start; gap: 1.4rem; }
+.l-hero-copy .l-actions { justify-content: flex-start; }
+.badge { background: var(--gray-100); border: 1px solid var(--gray-200); padding: 6px 16px; border-radius: 20px; font-size: .82rem; font-weight: 600; color: var(--text-secondary); }
+.l-title { font-size: clamp(2.8rem, 8vw, 4.6rem); }
+.l-title em { color: var(--accent); }
+.l-desc { font-size: 1.05rem; color: var(--text-secondary); max-width: 520px; }
+.l-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+.btn-black { background: var(--ink); color: var(--ink-inverse); padding: 14px 28px; border-radius: 12px; font-weight: 700; }
+.btn-black:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+.btn-ghost { border: 1.5px solid var(--gray-200); padding: 14px 28px; border-radius: 12px; font-weight: 600; background: var(--surface); }
+.btn-ghost:hover { background: var(--gray-50); }
+.l-stats { display: flex; gap: 2.5rem; padding: 1.4rem 2.2rem; border: 1px solid var(--gray-200); border-radius: var(--radius); background: var(--gray-50); flex-wrap: wrap; justify-content: center; }
+.l-stat-val { font-family: var(--font-display); font-size: 2rem; text-align: center; }
+.l-stat-label { font-size: .78rem; color: var(--text-muted); font-weight: 600; text-align: center; }
+.l-section { max-width: 900px; margin: 0 auto; padding-block: 4.5rem; }
+.tag { display: inline-block; border: 1px solid var(--gray-200); border-radius: 20px; padding: 5px 14px; font-size: .8rem; font-weight: 600; color: var(--text-muted); margin-bottom: 1rem; }
+.l-h2 { font-size: clamp(1.8rem, 4.5vw, 2.8rem); margin-bottom: 2.4rem; }
+.grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 16px; }
+.l-game { padding: 2rem; border-radius: var(--radius-lg); transition: all .2s; }
+.l-game:hover { box-shadow: var(--shadow); transform: translateY(-3px); }
+.l-game-icon { font-size: 2.2rem; margin-bottom: .8rem; }
+.l-game-name { font-weight: 800; margin-bottom: 4px; }
+.l-game-desc { font-size: .87rem; color: var(--text-secondary); }
+.l-features-band { background: var(--gray-50); }
+.grid-4 { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 16px; }
+.l-feature { padding: 1.5rem; }
+.l-feature-icon { font-size: 1.6rem; margin-bottom: .7rem; }
+.l-feature-title { font-weight: 800; font-size: .92rem; margin-bottom: 4px; }
+.l-feature-desc { font-size: .82rem; color: var(--text-secondary); }
+.l-cta-box { max-width: 900px; margin: 3rem auto; background: var(--ink); color: var(--ink-inverse); border-radius: var(--radius-xl); padding: 4rem 2rem; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 1rem; }
+.l-cta-title { font-size: clamp(2rem, 5vw, 3rem); }
+.l-cta-desc { opacity: .65; }
+.btn-white { background: var(--ink-inverse); color: var(--ink); padding: 14px 32px; border-radius: 12px; font-weight: 700; }
+.l-footer { text-align: center; padding-block: 2rem 4rem; color: var(--text-muted); font-size: .82rem; }
+
+/* Hero "try it" card */
+.try { padding: 1.5rem; border-radius: var(--radius-lg); box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 1rem; position: relative; }
+.try-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.try-title { font-weight: 800; font-size: .95rem; }
+.try-sub { font-size: .8rem; color: var(--text-muted); font-weight: 600; }
+.try-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px; }
+.try-done { text-align: center; font-weight: 700; color: var(--good); font-size: .9rem; min-height: 1.5em; }
+.try-reset { font-size: .8rem; color: var(--text-muted); min-height: 0; padding: 0; text-decoration: underline; }
+.try-float { position: absolute; top: -14px; right: 18px; background: var(--ink); color: var(--ink-inverse); font-size: .72rem; font-weight: 700; padding: 5px 12px; border-radius: 20px; }
+
+/* How it works */
+.steps { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 16px; counter-reset: step; }
+.step { padding: 1.6rem; display: flex; flex-direction: column; gap: .5rem; }
+.step-n { font-family: var(--font-display); font-size: 2.6rem; line-height: 1; color: var(--accent); }
+.step-title { font-weight: 800; }
+.step-desc { font-size: .87rem; color: var(--text-secondary); }
+
+/* Family report preview */
+.report-split { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 3rem; align-items: center; }
+.report-copy { display: flex; flex-direction: column; gap: 1rem; }
+.report-copy p { color: var(--text-secondary); max-width: 46ch; }
+.report-list { list-style: none; display: flex; flex-direction: column; gap: .6rem; font-size: .92rem; color: var(--text-secondary); }
+.report-list li { display: flex; gap: 10px; align-items: baseline; }
+.report-list li::before { content: "✓"; color: var(--accent); font-weight: 900; }
+.mail { padding: 0; overflow: hidden; box-shadow: var(--shadow); border-radius: var(--radius-lg); }
+.mail-head { padding: 1rem 1.3rem; border-bottom: 1px solid var(--gray-200); background: var(--gray-50); display: flex; flex-direction: column; gap: 2px; font-size: .8rem; color: var(--text-muted); }
+.mail-head strong { color: var(--ink); font-size: .95rem; }
+.mail-body { padding: 1.3rem; display: flex; flex-direction: column; gap: 1rem; }
+.mail-hi { font-family: var(--font-display); font-size: 1.5rem; line-height: 1.2; }
+.mail-kpis { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 8px; }
+.mail-kpi { background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: 12px; padding: .7rem; text-align: center; }
+.mail-kpi b { display: block; font-family: var(--font-display); font-size: 1.5rem; font-weight: 400; font-variant-numeric: tabular-nums; }
+.mail-kpi span { font-size: .7rem; color: var(--text-muted); font-weight: 600; }
+.mail-note { font-size: .88rem; color: var(--text-secondary); background: var(--accent-light); border-radius: 12px; padding: .8rem 1rem; }
+.mail-bars { display: flex; align-items: flex-end; gap: 6px; height: 54px; }
+.mail-bars i { flex: 1; background: var(--gray-300); border-radius: 4px 4px 2px 2px; }
+.mail-bars i.now { background: var(--accent); }
+
+/* Dashboard additions */
+.today { padding: 1.4rem; display: grid; grid-template-columns: auto minmax(0,1fr) auto; gap: 1.2rem; align-items: center; border-radius: var(--radius-lg); background: var(--accent-light); border-color: transparent; }
+.ring { width: 76px; height: 76px; position: relative; }
+.ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.ring-txt { position: absolute; inset: 0; display: grid; place-items: center; font-weight: 900; font-size: 1.05rem; font-variant-numeric: tabular-nums; }
+.today-label { font-size: .75rem; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: .07em; }
+.today-title { font-weight: 800; font-size: 1.05rem; }
+.today-desc { font-size: .85rem; color: var(--text-secondary); }
+.today-btn { background: var(--accent); color: #fff; border-radius: 12px; padding: 12px 20px; font-weight: 700; white-space: nowrap; }
+.today-btn:hover { transform: translateY(-2px); }
+.textsize { display: flex; align-items: center; gap: 10px; justify-content: space-between; padding: .9rem 1.2rem; border-radius: var(--radius); }
+.ts-label { font-weight: 700; font-size: .9rem; }
+.ts-sub { font-size: .78rem; color: var(--text-muted); }
+.ts-opts { display: flex; gap: 4px; background: var(--gray-100); padding: 4px; border-radius: 12px; }
+.ts-opt { min-height: 40px; min-width: 44px; border-radius: 9px; font-weight: 800; color: var(--text-muted); font-family: var(--font-display); }
+.ts-opt.active { background: var(--surface); color: var(--ink); box-shadow: 0 1px 4px rgba(0,0,0,.1); }
+
+/* Confetti */
+.confetti { position: fixed; inset: 0; pointer-events: none; z-index: 90; overflow: hidden; }
+.confetti i { position: absolute; top: -12px; width: 9px; height: 14px; border-radius: 2px; animation: fall 1.8s cubic-bezier(.2,.6,.4,1) forwards; }
+@keyframes fall { to { transform: translateY(105vh) rotate(540deg); opacity: .2; } }
+
+/* Progress report card */
+.report-card { padding: 1.3rem 1.4rem; display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
+.report-card .rc-body { flex: 1; min-width: 200px; }
+.btn-small { border: 1.5px solid var(--gray-300); border-radius: 10px; padding: 8px 16px; min-height: 40px; font-size: .85rem; font-weight: 700; }
+.btn-small:hover { background: var(--gray-50); }
+
+/* ---------- Auth ---------- */
+.auth-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding-block: 2rem; background:
+  radial-gradient(ellipse 80% 60% at 15% 10%, color-mix(in srgb, var(--accent) 12%, transparent) 0%, transparent 60%),
+  radial-gradient(ellipse 60% 50% at 85% 85%, color-mix(in srgb, var(--accent) 8%, transparent) 0%, transparent 55%), var(--bg); }
+.auth-card { width: 100%; max-width: 440px; padding: 2.5rem 2rem; display: flex; flex-direction: column; gap: 1rem; }
+.auth-logo { justify-content: center; margin-bottom: .6rem; }
+.auth-logo .logo-icon { background: var(--accent); width: 46px; height: 46px; border-radius: 14px; font-size: 24px; }
+.auth-title { font-size: 1.9rem; text-align: center; }
+.auth-sub { text-align: center; color: var(--text-muted); font-size: .9rem; margin-bottom: .6rem; }
+.auth-error { background: var(--bad-bg); border: 1.5px solid var(--bad-border); color: var(--bad); padding: 10px 14px; border-radius: 10px; font-size: .88rem; font-weight: 600; }
+.auth-switch { text-align: center; color: var(--text-muted); font-size: .88rem; }
+.link { color: var(--accent); font-weight: 700; min-height: 0; padding: 0; font-size: inherit; }
+.link:hover { text-decoration: underline; }
+.auth-back { align-self: flex-start; font-size: .85rem; color: var(--text-muted); min-height: 0; padding: 0; }
+
+/* ---------- App shell ---------- */
+.navbar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 50; background: var(--nav-bg); backdrop-filter: blur(12px); border-bottom: 1px solid var(--gray-200); }
+.navbar-in { display: flex; align-items: center; justify-content: space-between; height: 64px; gap: 12px; max-width: 1100px; margin: 0 auto; }
+.nb-links { display: flex; gap: 2px; }
+.nb-link { padding: 7px 14px; border-radius: 8px; font-size: .875rem; font-weight: 500; color: var(--text-muted); min-height: 0; }
+.nb-link:hover, .nb-link.active { color: var(--ink); background: var(--gray-100); }
+.nb-link.active { font-weight: 700; }
+.nb-user { display: flex; align-items: center; gap: 10px; }
+.avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--ink); color: var(--ink-inverse); display: grid; place-items: center; font-weight: 700; font-size: .9rem; flex-shrink: 0; }
+.nb-name { font-size: .85rem; font-weight: 700; line-height: 1.2; }
+.nb-logout { font-size: .75rem; color: var(--text-muted); min-height: 0; padding: 0; font-weight: 500; }
+.nb-logout:hover { color: var(--ink); }
+.nb-mobile { display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 50; background: var(--nav-bg); backdrop-filter: blur(12px); border-top: 1px solid var(--gray-200); padding: 8px max(8px, env(safe-area-inset-right, 0px)) max(8px, env(safe-area-inset-bottom, 0px)) max(8px, env(safe-area-inset-left, 0px)); justify-content: space-around; }
+.nb-m-item { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 4px 8px; min-height: 0; }
+.nb-m-icon { font-size: 1.3rem; }
+.nb-m-label { font-size: .66rem; font-weight: 600; color: var(--text-muted); }
+.nb-m-item.active .nb-m-label { color: var(--ink); }
+.app-main { max-width: 900px; margin: 0 auto; padding-block: 2rem 6rem; }
+
+/* ---------- Dashboard ---------- */
+.dash-hero { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
+.dash-greeting { font-size: .85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; }
+.dash-title { font-size: clamp(1.7rem, 4.5vw, 2.4rem); }
+.streak { display: flex; align-items: center; gap: 10px; background: var(--ink); color: var(--ink-inverse); border-radius: 14px; padding: 12px 18px; flex-shrink: 0; }
+.streak-num { font-size: 1.5rem; font-weight: 900; line-height: 1; }
+.streak-label { font-size: .7rem; font-weight: 600; opacity: .7; }
+.stats-3 { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; }
+.stat { padding: 1.2rem; text-align: center; }
+.stat.accent { background: var(--ink); border-color: var(--ink); color: var(--ink-inverse); }
+.stat-icon { font-size: 1.3rem; }
+.stat-val { font-family: var(--font-display); font-size: 1.8rem; font-variant-numeric: tabular-nums; }
+.stat-label { font-size: .74rem; color: var(--text-muted); font-weight: 600; }
+.stat.accent .stat-label { color: var(--ink-inverse); opacity: .6; }
+.game-tile { text-align: left; padding: 1.4rem; border-radius: var(--radius-lg); display: flex; flex-direction: column; gap: 6px; position: relative; min-height: 0; font-weight: 400; }
+.game-tile:hover { border-color: var(--ink); box-shadow: var(--shadow); transform: translateY(-3px); }
+.gt-top { display: flex; justify-content: space-between; align-items: center; }
+.gt-icon { font-size: 1.8rem; }
+.gt-tag { font-size: .72rem; font-weight: 700; padding: 3px 10px; background: var(--gray-100); border-radius: 20px; color: var(--text-muted); }
+.gt-name { font-weight: 800; font-size: 1rem; }
+.gt-desc { font-size: .82rem; color: var(--text-secondary); }
+.gt-best { font-size: .78rem; color: var(--accent); font-weight: 700; }
+.arrow { position: absolute; bottom: 1.2rem; right: 1.2rem; color: var(--gray-300); transition: all .15s; }
+.game-tile:hover .arrow, .row-card:hover .arrow-in { color: var(--ink); transform: translateX(3px); }
+.row-card { display: flex; align-items: center; gap: 14px; background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: var(--radius); padding: 1rem 1.2rem; text-align: left; width: 100%; min-height: 0; font-weight: 400; }
+.row-card:hover { border-color: var(--gray-300); background: var(--surface); }
+.rc-icon { font-size: 1.4rem; }
+.rc-title { font-weight: 700; font-size: .92rem; }
+.rc-desc { font-size: .8rem; color: var(--text-muted); }
+.arrow-in { margin-left: auto; color: var(--gray-300); transition: all .15s; }
+
+/* ---------- Games list ---------- */
+.jogo-card { display: flex; align-items: center; gap: 16px; padding: 1.2rem 1.4rem; text-align: left; width: 100%; min-height: 0; font-weight: 400; }
+.jogo-card:hover { box-shadow: var(--shadow); transform: translateY(-2px); border-color: var(--gc); }
+.jogo-icon { width: 64px; height: 64px; border-radius: 16px; display: grid; place-items: center; font-size: 2rem; flex-shrink: 0; }
+.jogo-body { flex: 1; min-width: 0; }
+.jogo-name { font-weight: 800; font-size: 1.05rem; }
+.jogo-desc { font-size: .85rem; color: var(--text-secondary); margin-block: 2px 8px; }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip { font-size: .72rem; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
+
+/* ---------- Difficulty picker ---------- */
+.back { align-self: flex-start; font-size: .9rem; color: var(--text-muted); min-height: 0; padding: 4px 0; }
+.back:hover { color: var(--ink); }
+.dp-header { border: 2px solid; border-radius: var(--radius-lg); padding: 2rem 1.5rem; text-align: center; display: flex; flex-direction: column; align-items: center; gap: .5rem; }
+.dp-icon { font-size: 3rem; }
+.dp-title { font-size: 2rem; }
+.dp-desc { color: var(--text-secondary); font-size: .95rem; max-width: 46ch; }
+.dp-levels { display: flex; flex-direction: column; gap: 10px; }
+.dp-level { background: var(--surface); border: 2px solid var(--gray-200); border-radius: 14px; padding: 1rem 1.2rem; display: flex; align-items: center; justify-content: space-between; gap: 10px; text-align: left; }
+.dp-level:hover { border-color: var(--lc); transform: translateX(3px); }
+.dp-left { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.dp-badge { font-size: .85rem; font-weight: 800; padding: 4px 12px; border-radius: 20px; }
+.dp-detail { font-size: .88rem; color: var(--text-secondary); font-weight: 500; }
+.dp-suggest { font-size: .7rem; font-weight: 700; color: var(--accent); background: var(--accent-light); padding: 2px 8px; border-radius: 20px; }
+
+/* ---------- Gameplay shared ---------- */
+.play { display: flex; flex-direction: column; gap: 1.2rem; max-width: 620px; margin: 0 auto; }
+.topbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.tb-title { font-weight: 800; font-size: 1.05rem; }
+.tb-sub { font-size: .85rem; color: var(--text-muted); font-weight: 600; font-variant-numeric: tabular-nums; }
+.timer { display: flex; align-items: center; gap: 6px; background: var(--surface); border: 2px solid var(--gray-200); border-radius: 12px; padding: 8px 14px; font-weight: 800; font-size: 1.05rem; font-variant-numeric: tabular-nums; }
+.timer.urgent { border-color: var(--bad); color: var(--bad); background: var(--bad-bg); }
+.progress { height: 8px; background: var(--gray-100); border-radius: 8px; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 8px; transition: width .4s ease; }
+.opt-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; }
+.opt { background: var(--surface); border: 2.5px solid var(--gray-200); border-radius: 16px; font-size: 1.4rem; font-weight: 800; min-height: 72px; font-variant-numeric: tabular-nums; }
+.opt:hover:not(:disabled) { border-color: var(--ink); transform: translateY(-2px); }
+.opt.good { border-color: var(--good); background: var(--good-bg); color: var(--good); }
+.opt.bad { border-color: var(--bad); background: var(--bad-bg); color: var(--bad); }
+.opt.name { font-size: 1.1rem; font-weight: 700; min-height: 60px; }
+.feedback { text-align: center; font-weight: 700; min-height: 1.6em; }
+.feedback.good { color: var(--good); }
+.feedback.bad { color: var(--bad); }
+
+.math-card { padding: 2.5rem 1rem; text-align: center; }
+.math-expr { font-family: var(--font-display); font-size: clamp(3rem, 12vw, 4.5rem); line-height: 1; font-variant-numeric: tabular-nums; }
+.math-eq { color: var(--text-muted); font-size: 1.4rem; font-weight: 700; margin-top: .6rem; }
+
+.mb-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px; }
+.mb-card { aspect-ratio: 1; max-width: 100%; border-radius: 14px; perspective: 600px; padding: 0; min-height: 0; background: none; }
+.mb-inner { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform .4s cubic-bezier(.4,0,.2,1); }
+.mb-card.flipped .mb-inner { transform: rotateY(180deg); }
+.mb-face { position: absolute; inset: 0; display: grid; place-items: center; border-radius: 14px; backface-visibility: hidden; font-size: clamp(1.4rem, 6vw, 2.2rem); border: 2px solid var(--gray-200); }
+.mb-front { background: var(--memory-bg); color: var(--memory-color); font-size: clamp(1rem, 4vw, 1.4rem); font-weight: 800; }
+.mb-back { background: var(--surface); transform: rotateY(180deg); }
+.mb-card.matched .mb-back { border-color: var(--good); background: var(--good-bg); }
+.hint-text { text-align: center; font-size: .85rem; color: var(--text-muted); }
+
+.face-photo { width: min(260px, 70vw); max-width: 100%; aspect-ratio: 1; margin: 0 auto; border-radius: 20px; display: grid; place-items: center; font-size: clamp(5rem, 22vw, 8rem); overflow: hidden; }
+.face-photo img { width: 100%; height: 100%; object-fit: cover; }
+
+.word-hint { background: var(--hint-bg); border: 1.5px solid var(--hint-border); border-radius: 12px; padding: 10px 16px; font-size: .92rem; color: var(--text-secondary); }
+.word-card { padding: 2rem 1rem; }
+.word-chars { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
+.word-char { width: 48px; height: 58px; border-radius: 10px; display: grid; place-items: center; font-size: 1.6rem; font-weight: 800; background: var(--gray-100); }
+.word-char.blank { background: var(--word-bg); color: var(--word-color); border: 2px dashed var(--word-color); }
+.word-char.blank.filled-good { border-style: solid; background: var(--good-bg); color: var(--good); }
+.word-char.blank.filled-bad { border-style: solid; background: var(--bad-bg); color: var(--bad); border-color: var(--bad); }
+
+/* ---------- Result ---------- */
+.result { max-width: 480px; margin: 1rem auto; padding: 2.5rem 2rem; text-align: center; display: flex; flex-direction: column; align-items: center; gap: .6rem; }
+.result-emoji { font-size: 3.5rem; }
+.result-title { font-size: 2.4rem; }
+.result-game { color: var(--text-muted); font-weight: 600; font-size: .9rem; }
+.result-msg { color: var(--text-secondary); }
+.result-stats { display: flex; align-items: center; justify-content: center; gap: 1.4rem; background: var(--gray-50); border-radius: var(--radius); padding: 1.2rem 1.6rem; margin-block: .8rem; width: 100%; }
+.rs-val { font-family: var(--font-display); font-size: 2rem; font-variant-numeric: tabular-nums; }
+.rs-label { font-size: .74rem; color: var(--text-muted); font-weight: 600; }
+.rs-div { width: 1px; align-self: stretch; background: var(--gray-200); }
+.result-actions { display: flex; flex-direction: column; gap: 10px; width: 100%; }
+
+/* ---------- Health ---------- */
+.health-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 14px; }
+.h-card { padding: 1.4rem; display: flex; flex-direction: column; gap: .8rem; }
+.h-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.h-title { font-weight: 800; }
+.h-val { font-size: .85rem; color: var(--text-muted); font-weight: 700; font-variant-numeric: tabular-nums; }
+.glasses { display: flex; gap: 6px; flex-wrap: wrap; }
+.glass { width: 34px; height: 42px; border-radius: 6px 6px 10px 10px; border: 2px solid var(--memory-color); min-height: 0; padding: 0; position: relative; overflow: hidden; background: var(--surface); }
+.glass.full::after { content: ""; position: absolute; inset: 35% 0 0; background: var(--memory-color); opacity: .55; }
+.stepper { display: flex; align-items: center; gap: 12px; }
+.step-btn { width: 44px; height: 44px; min-height: 0; border-radius: 12px; border: 1.5px solid var(--gray-300); font-size: 1.2rem; }
+.step-val { font-family: var(--font-display); font-size: 2rem; min-width: 3ch; text-align: center; font-variant-numeric: tabular-nums; }
+.moods { display: flex; gap: 6px; flex-wrap: wrap; }
+.mood { font-size: 1.6rem; width: 52px; height: 52px; min-height: 0; border-radius: 14px; border: 2px solid var(--gray-200); background: var(--surface); }
+.mood.sel { border-color: var(--accent); background: var(--accent-light); }
+.move-opts { display: flex; gap: 6px; flex-wrap: wrap; }
+.move { font-size: .85rem; padding: 8px 14px; min-height: 0; border-radius: 20px; border: 1.5px solid var(--gray-200); }
+.move.sel { background: var(--ink); color: var(--ink-inverse); border-color: var(--ink); }
+.week { display: grid; grid-template-columns: repeat(7, minmax(0,1fr)); gap: 6px; }
+.day { text-align: center; padding: .6rem .2rem; border-radius: 12px; background: var(--gray-50); border: 1px solid var(--gray-200); }
+.day.today { border-color: var(--ink); }
+.day-name { font-size: .7rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .05em; }
+.day-mood { font-size: 1.2rem; }
+.day-water { font-size: .7rem; color: var(--memory-color); font-weight: 700; }
+
+/* ---------- Family ---------- */
+.fam-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; }
+.btn-add { background: var(--accent); color: #fff; border-radius: 12px; padding: 10px 20px; font-weight: 700; white-space: nowrap; min-height: 44px; flex-shrink: 0; }
+.fam-form { padding: 1.6rem; display: flex; flex-direction: column; gap: 1rem; }
+.photo-up { border: 2.5px dashed var(--gray-300); border-radius: 14px; height: 180px; display: grid; place-items: center; overflow: hidden; width: 100%; color: var(--text-muted); font-weight: 600; font-size: .9rem; }
+.photo-up:hover { border-color: var(--accent); }
+.photo-up img { width: 100%; height: 100%; object-fit: cover; }
+.fam-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 14px; }
+.fam-card { padding: .8rem; position: relative; display: flex; flex-direction: column; gap: .6rem; }
+.fam-photo { aspect-ratio: 1; max-width: 100%; border-radius: 12px; display: grid; place-items: center; font-size: 3.4rem; overflow: hidden; }
+.fam-photo img { width: 100%; height: 100%; object-fit: cover; }
+.fam-name { font-weight: 800; font-size: .95rem; line-height: 1.3; }
+.fam-rel { font-size: .8rem; color: var(--text-muted); font-weight: 600; }
+.fam-del { position: absolute; top: 14px; right: 14px; background: var(--surface); border: 1px solid var(--gray-200); border-radius: 8px; padding: 2px 8px; min-height: 0; font-size: .75rem; color: var(--bad); font-weight: 700; }
+.confirm-row { display: flex; gap: 6px; }
+.confirm-row button { flex: 1; min-height: 34px; font-size: .78rem; border-radius: 8px; }
+.cr-yes { background: var(--bad); color: #fff; }
+.cr-no { border: 1px solid var(--gray-300); }
+
+/* ---------- Progress ---------- */
+.tabs { display: flex; background: var(--gray-100); border-radius: 12px; padding: 4px; gap: 4px; }
+.tab { flex: 1; border-radius: 10px; padding: 10px; font-size: .9rem; font-weight: 700; color: var(--text-muted); min-height: 0; }
+.tab.active { background: var(--surface); color: var(--ink); box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+.list { display: flex; flex-direction: column; gap: 10px; }
+.li { display: flex; align-items: center; gap: 14px; padding: 1rem 1.2rem; }
+.li-icon { width: 46px; height: 46px; border-radius: 12px; display: grid; place-items: center; font-size: 1.4rem; flex-shrink: 0; }
+.li-body { flex: 1; min-width: 0; }
+.li-name { font-weight: 800; font-size: .95rem; }
+.li-meta { font-size: .8rem; color: var(--text-muted); font-weight: 500; font-variant-numeric: tabular-nums; }
+.li-right { text-align: right; flex-shrink: 0; }
+.li-score { font-weight: 800; font-variant-numeric: tabular-nums; }
+.chart-card { padding: 1.4rem; }
+.chart-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 1rem; gap: 8px; flex-wrap: wrap; }
+.chart-title { font-weight: 800; }
+.chart-note { font-size: .8rem; color: var(--text-muted); font-weight: 600; }
+.chart svg { width: 100%; height: auto; display: block; }
+
+@media (max-width: 768px) {
+  .navbar { display: none; }
+  .nb-mobile { display: flex; }
+  .app-main { padding-block: 1.4rem 6.5rem; }
+  .grid-4 { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .l-hero, .report-split { grid-template-columns: minmax(0,1fr); gap: 2.5rem; padding-block: 3rem 2.5rem; }
+  .steps { grid-template-columns: minmax(0,1fr); }
+  .fam-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+}
+@media (max-width: 600px) {
+  .grid-2, .health-grid { grid-template-columns: minmax(0,1fr); }
+  .l-stats { gap: 1.4rem; padding: 1.1rem; }
+  .l-links .l-link { display: none; }
+  .l-cta { white-space: nowrap; padding: 9px 14px; }
+  .l-nav .proto-chip { display: none; }
+  .stats-3 { gap: 8px; }
+  .stat { padding: .9rem .4rem; }
+  .word-char { width: 40px; height: 50px; font-size: 1.35rem; }
+  .mb-grid { gap: 7px; }
+  .result-stats { gap: .8rem; padding: 1rem; }
+  .today { grid-template-columns: auto minmax(0,1fr); }
+  .today-btn { grid-column: 1 / -1; width: 100%; }
+  .l-actions > * { flex: 1 1 100%; }
+  .l-title { font-size: clamp(2.6rem, 12vw, 3.4rem); }
+  .mail-hi { font-size: 1.3rem; }
+}
+</style>
+
+<div id="app"></div>
+
+<script>
+/* CogniMente — English presentation prototype. All data is local mock data; no backend calls. */
+
+const GAMES = {
+  memory: { icon: '🃏', name: 'Memory Match',    short: 'Find the matching pairs',       long: 'Find the pairs of matching pictures before time runs out. Trains attention and visual memory.', tag: 'Memory',    tags: ['Memory', 'Visual'],         color: 'var(--memory-color)', bg: 'var(--memory-bg)', route: 'memory' },
+  math:   { icon: '🔢', name: 'Quick Math',      short: 'Simple additions and subtractions', long: 'Additions, subtractions and multiplications against the clock. Keeps logical reasoning sharp.', tag: 'Reasoning', tags: ['Reasoning', 'Numbers'],     color: 'var(--math-color)',   bg: 'var(--math-bg)',   route: 'math' },
+  face:   { icon: '👨‍👩‍👧', name: 'Family Faces', short: 'Match faces to names',          long: 'See a photo of a loved one and pick the right name. Exercises emotional memory.',              tag: 'Emotional', tags: ['Memory', 'Emotional'],      color: 'var(--face-color)',   bg: 'var(--face-bg)',   route: 'faces' },
+  word:   { icon: '📝', name: 'Fill the Word',   short: 'Find the missing letters',      long: 'Discover the letters missing from the word. Stimulates language and vocabulary.',             tag: 'Language',  tags: ['Language', 'Vocabulary'],   color: 'var(--word-color)',   bg: 'var(--word-bg)',   route: 'words' },
+}
+const DIFF = { easy: 'Easy', medium: 'Medium', hard: 'Hard' }
+const MULT = { easy: 1, medium: 1.5, hard: 2 }
+
+const LEVELS = {
+  memory: [
+    { key: 'easy',   detail: '4 pairs · 2 minutes',    pairs: 4, time: 120 },
+    { key: 'medium', detail: '6 pairs · 90 seconds',   pairs: 6, time: 90 },
+    { key: 'hard',   detail: '8 pairs · 60 seconds',   pairs: 8, time: 60 },
+  ],
+  math: [
+    { key: 'easy',   detail: '5 questions · + and − up to 10 · 20s each', n: 5,  time: 20 },
+    { key: 'medium', detail: '8 questions · +, −, × · 15s each',          n: 8,  time: 15 },
+    { key: 'hard',   detail: '10 questions · all operations · 10s each',  n: 10, time: 10 },
+  ],
+  face: [
+    { key: 'easy',   detail: '2 choices · 4 rounds · 30s each', opts: 2, n: 4, time: 30 },
+    { key: 'medium', detail: '4 choices · 6 rounds · 20s each', opts: 4, n: 6, time: 20 },
+    { key: 'hard',   detail: '6 choices · 8 rounds · 15s each', opts: 6, n: 8, time: 15 },
+  ],
+  word: [
+    { key: 'easy',   detail: '1 missing letter · with a hint · 30s each',  blanks: 1, hint: true,  n: 6, time: 30 },
+    { key: 'medium', detail: '2 missing letters · with a hint · 20s each', blanks: 2, hint: true,  n: 6, time: 20 },
+    { key: 'hard',   detail: '3 missing letters · no hint · 15s each',     blanks: 3, hint: false, n: 6, time: 15 },
+  ],
+}
+
+const MEMORY_ITEMS = ['🌻', '🍎', '🐱', '🎈', '⛵', '🌙', '🎵', '🦋', '🍋', '🏠']
+const WORDS = [
+  { w: 'GARDEN',   hint: 'Where flowers and vegetables grow' },
+  { w: 'KITCHEN',  hint: 'The room where meals are cooked' },
+  { w: 'SUNSHINE', hint: 'Warm light from the sky' },
+  { w: 'TEACUP',   hint: 'You drink a hot drink from it' },
+  { w: 'BICYCLE',  hint: 'Two wheels and pedals' },
+  { w: 'PIANO',    hint: 'An instrument with black and white keys' },
+  { w: 'BUTTERFLY',hint: 'An insect with colourful wings' },
+  { w: 'BIRTHDAY', hint: 'A yearly celebration with cake' },
+  { w: 'LIBRARY',  hint: 'A place full of books to borrow' },
+  { w: 'ORANGE',   hint: 'A citrus fruit and a colour' },
+  { w: 'WINDOW',   hint: 'Glass you look through' },
+  { w: 'BLANKET',  hint: 'Keeps you warm in bed' },
+]
+const RELATIONSHIPS = ['Son', 'Daughter', 'Grandson', 'Granddaughter', 'Husband', 'Wife', 'Brother', 'Sister', 'Nephew', 'Niece', 'Friend', 'Other']
+const MOODS = [['😄', 'Great'], ['🙂', 'Good'], ['😐', 'Okay'], ['😔', 'Low'], ['😣', 'Unwell']]
+const TEXT_SIZES = [{ label: 'A', px: 17, name: 'Standard' }, { label: 'A+', px: 19, name: 'Large' }, { label: 'A++', px: 21, name: 'Extra large' }]
+const MOVES = ['Walk', 'Stretching', 'Gardening', 'Dancing', 'Water aerobics', 'Rest day']
+
+/* ---------- Mock state ---------- */
+const now = Date.now()
+const DAY = 86400000
+const S = {
+  user: null,
+  route: 'home',
+  family: [
+    { id: 1, name: 'Anna Collins',   relationship: 'Daughter',      emoji: '👩',    bg: 'var(--face-bg)' },
+    { id: 2, name: 'Robert Collins', relationship: 'Husband',       emoji: '👴',    bg: 'var(--memory-bg)' },
+    { id: 3, name: 'Lucas Collins',  relationship: 'Grandson',      emoji: '👦',    bg: 'var(--math-bg)' },
+    { id: 4, name: 'Sophie Collins', relationship: 'Granddaughter', emoji: '👧',    bg: 'var(--word-bg)' },
+    { id: 5, name: 'Mark Collins',   relationship: 'Son',           emoji: '🧔',    bg: 'var(--gray-100)' },
+    { id: 6, name: 'Helen Parker',   relationship: 'Sister',        emoji: '👵',    bg: 'var(--face-bg)' },
+  ],
+  history: [
+    { id: 1, game: 'memory', diff: 'easy',   score: 420, correct: 4, total: 4,  dur: 64,  at: now - 0.2 * DAY },
+    { id: 2, game: 'math',   diff: 'medium', score: 780, correct: 7, total: 8,  dur: 98,  at: now - 1 * DAY },
+    { id: 3, game: 'word',   diff: 'easy',   score: 510, correct: 5, total: 6,  dur: 120, at: now - 1.3 * DAY },
+    { id: 4, game: 'face',   diff: 'medium', score: 690, correct: 6, total: 6,  dur: 74,  at: now - 2 * DAY },
+    { id: 5, game: 'memory', diff: 'medium', score: 560, correct: 6, total: 6,  dur: 81,  at: now - 3 * DAY },
+    { id: 6, game: 'math',   diff: 'easy',   score: 450, correct: 5, total: 5,  dur: 55,  at: now - 4 * DAY },
+    { id: 7, game: 'word',   diff: 'medium', score: 480, correct: 4, total: 6,  dur: 102, at: now - 5 * DAY },
+    { id: 8, game: 'face',   diff: 'easy',   score: 380, correct: 4, total: 4,  dur: 40,  at: now - 6 * DAY },
+  ],
+  health: {
+    water: 5, sleep: 7, mood: 1, moves: ['Walk'],
+    week: [ ['🙂', 6], ['😄', 8], ['🙂', 7], ['😐', 5], ['🙂', 7], ['😄', 8] ],
+  },
+  progressTab: 'best',
+  textSize: 0,
+  mini: null,
+  famForm: null,
+  confirmDel: null,
+  play: null,
+}
+let timerId = null
+let nextId = 100
+
+/* ---------- Helpers ---------- */
+const $ = s => document.querySelector(s)
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]))
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]] } return a }
+const rand = (a, b) => a + Math.floor(Math.random() * (b - a + 1))
+const fmt = n => n.toLocaleString('en-US')
+const firstName = () => (S.user?.name || 'Friend').split(' ')[0]
+const summary = () => {
+  const days = new Set(S.history.map(h => new Date(h.at).toDateString()))
+  let streak = 0
+  for (let d = 0; d < 60; d++) { if (days.has(new Date(now - d * DAY).toDateString())) streak++; else if (d > 0) break }
+  return { sessions: S.history.length, points: S.history.reduce((a, h) => a + h.score, 0), streak: Math.max(streak, 1) + 4 }
+}
+const bestScores = () => {
+  const map = {}
+  for (const h of S.history) { const k = h.game + h.diff; if (!map[k] || map[k].score < h.score) map[k] = h }
+  return Object.values(map).sort((a, b) => b.score - a.score)
+}
+const suggestDiff = game => {
+  const last = S.history.filter(h => h.game === game).slice(0, 3)
+  if (!last.length) return 'easy'
+  const acc = last.reduce((a, h) => a + h.correct / h.total, 0) / last.length
+  const top = last[0].diff
+  if (acc >= .85) return top === 'easy' ? 'medium' : 'hard'
+  if (acc < .5) return top === 'hard' ? 'medium' : 'easy'
+  return top
+}
+function toast(msg) {
+  const t = document.createElement('div'); t.className = 'toast pop'; t.textContent = msg
+  document.body.appendChild(t); setTimeout(() => t.remove(), 2200)
+}
+function confetti() {
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return
+  const box = document.createElement('div'); box.className = 'confetti'
+  const colors = ['var(--memory-color)', 'var(--math-color)', 'var(--face-color)', 'var(--word-color)']
+  box.innerHTML = Array.from({ length: 60 }, (_, i) => `<i style="left:${Math.random() * 100}%;background:${colors[i % 4]};animation-delay:${Math.random() * .5}s;transform:rotate(${rand(0, 180)}deg)"></i>`).join('')
+  document.body.appendChild(box); setTimeout(() => box.remove(), 2600)
+}
+function stopTimer() { if (timerId) { clearInterval(timerId); timerId = null } }
+
+/* ---------- Router ---------- */
+const APP_ROUTES = ['dashboard', 'games', 'health', 'family', 'progress', 'memory', 'math', 'faces', 'words']
+function go(route) {
+  stopTimer()
+  if (APP_ROUTES.includes(route) && !S.user) S.user = { name: 'Margaret Collins', email: 'margaret@example.com' }
+  S.route = route
+  if (['memory', 'math', 'faces', 'words'].includes(route)) S.play = { phase: 'pick' }
+  S.famForm = null; S.confirmDel = null
+  try { history.replaceState(null, '', '#' + route) } catch (e) {}
+  render()
+  window.scrollTo(0, 0)
+}
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-go]')
+  if (el) { e.preventDefault(); go(el.dataset.go) }
+})
+
+function render() {
+  const r = S.route
+  let html
+  if (r === 'home') html = landing()
+  else if (r === 'signin' || r === 'signup') html = auth(r)
+  else html = shell(page(r))
+  document.documentElement.style.fontSize = TEXT_SIZES[S.textSize].px + 'px'
+  $('#app').innerHTML = html
+  afterRender()
+}
+function page(r) {
+  switch (r) {
+    case 'dashboard': return dashboard()
+    case 'games': return gamesList()
+    case 'health': return health()
+    case 'family': return familyPage()
+    case 'progress': return progress()
+    case 'memory': return gameView('memory')
+    case 'math': return gameView('math')
+    case 'faces': return gameView('face')
+    case 'words': return gameView('word')
+  }
+  return dashboard()
+}
+
+/* ---------- Landing ---------- */
+function landing() {
+  const g = Object.values(GAMES)
+  const features = [
+    ['🎯', 'Adaptive difficulty', 'The app learns from your results and adjusts the level automatically.'],
+    ['👨‍👩‍👧', 'Games with your family', 'Add photos and names of loved ones for a game that is truly yours.'],
+    ['💚', 'Whole-person health', 'Track water, sleep, movement and mood. Mind and body together.'],
+    ['📊', 'Family report', 'Your family receives a weekly summary of your progress.'],
+  ]
+  return `
+  <main>
+    <nav class="l-nav wrap"><div class="l-nav-in">
+      <div class="logo"><div class="logo-icon">🧠</div><span class="logo-text">CogniMente</span><span class="proto-chip">Prototype</span></div>
+      <div class="l-links">
+        <button class="l-link" data-go="signin">Sign in</button>
+        <button class="l-cta" data-go="signup">Start for free</button>
+      </div>
+    </div></nav>
+
+    <section class="wrap"><div class="l-hero">
+      <div class="l-hero-copy">
+        <div class="badge fade-up">🌿 Brain training for older adults</div>
+        <h1 class="l-title fade-up" style="animation-delay:.08s">Exercise your mind.<br><em>Live better.</em></h1>
+        <p class="l-desc fade-up" style="animation-delay:.14s">Simple games designed especially for older adults. Memory, reasoning and recognition, at your own pace, every day.</p>
+        <div class="l-actions fade-up" style="animation-delay:.2s">
+          <button class="btn-black" data-go="signup">Start now, it's free</button>
+          <button class="btn-ghost" data-go="signin">I already have an account</button>
+        </div>
+        <div class="l-stats fade-up" style="animation-delay:.28s">
+          ${[['4', 'brain games'], ['3', 'difficulty levels'], ['100%', 'free']].map(([v, l]) => `<div><div class="l-stat-val">${v}</div><div class="l-stat-label">${l}</div></div>`).join('')}
+        </div>
+      </div>
+      ${miniGame()}
+    </div></section>
+
+    <section class="wrap"><div class="l-section">
+      <div class="tag">The games</div>
+      <h2 class="l-h2">4 games to stimulate<br>every area of the mind</h2>
+      <div class="grid-2">
+        ${g.map((x, i) => `<div class="l-game card fade-up" style="animation-delay:${i * .07}s">
+          <div class="l-game-icon">${x.icon}</div><div class="l-game-name">${x.name}</div><div class="l-game-desc">${x.long}</div></div>`).join('')}
+      </div>
+    </div></section>
+
+    <section class="l-features-band wrap"><div class="l-section">
+      <div class="tag">How it works</div>
+      <h2 class="l-h2">Ten minutes a day,<br>three simple steps</h2>
+      <div class="steps">
+        ${[['Create your profile', 'Sign up in under a minute. Add a few family photos so the games feel personal.'],
+           ['Play a short session', 'One or two games a day. The difficulty adjusts to how you are doing.'],
+           ['Your family stays close', 'Every Sunday, loved ones get a summary of your progress, mood and habits.']]
+          .map(([t, d], i) => `<div class="step card"><div class="step-n">${i + 1}</div><div class="step-title">${t}</div><div class="step-desc">${d}</div></div>`).join('')}
+      </div>
+    </div></section>
+
+    <section class="wrap"><div class="l-section">
+      <div class="tag">Why CogniMente</div>
+      <h2 class="l-h2">Made with care,<br>down to every detail</h2>
+      <div class="grid-4">
+        ${features.map(([i, t, d]) => `<div class="l-feature card"><div class="l-feature-icon">${i}</div><div class="l-feature-title">${t}</div><div class="l-feature-desc">${d}</div></div>`).join('')}
+      </div>
+    </div></section>
+
+    <section class="l-features-band wrap"><div class="l-section report-split">
+      <div class="report-copy">
+        <div class="tag" style="align-self:flex-start;margin:0">For families and caregivers</div>
+        <h2 class="l-h2" style="margin:0">Peace of mind,<br>delivered every Sunday</h2>
+        <p>Children and caregivers often live far away. CogniMente sends them a short, friendly report so they know how their loved one is doing, without asking every day.</p>
+        <ul class="report-list">
+          <li>Days played and total practice time</li>
+          <li>Accuracy trends in each game</li>
+          <li>Mood, sleep and water from the daily check-in</li>
+          <li>A gentle heads-up if something changes</li>
+        </ul>
+      </div>
+      ${reportMail()}
+    </div></section>
+
+    <section class="wrap"><div class="l-cta-box">
+      <h2 class="l-cta-title">Start today.</h2>
+      <p class="l-cta-desc">Free, simple and made for you.</p>
+      <button class="btn-white" data-go="signup">Create my account</button>
+    </div></section>
+
+    <footer class="l-footer wrap">Made with ❤️ to care for the minds of our elders · CogniMente 2026<br>Prototype for presentation · all data shown is example data</footer>
+  </main>`
+}
+function miniGame() {
+  if (!S.mini) S.mini = { cards: shuffle(['🌻', '🌻', '🍎', '🍎', '🐱', '🐱']).map((v, i) => ({ i, v, flipped: false, matched: false })), sel: [], found: 0, locked: false }
+  const m = S.mini, done = m.found === 3
+  return `<div class="try card fade-up" style="animation-delay:.2s">
+    <span class="try-float">Try it now</span>
+    <div class="try-head"><div><div class="try-title">🃏 Memory Match</div><div class="try-sub">Find the 3 pairs</div></div><div class="try-sub">${m.found}/3</div></div>
+    <div class="try-grid mb-grid" style="grid-template-columns:repeat(3,minmax(0,1fr))">${m.cards.map(c => `<button class="mb-card ${c.flipped || c.matched ? 'flipped' : ''} ${c.matched ? 'matched' : ''}" data-mini="${c.i}" aria-label="${c.flipped || c.matched ? c.v : 'Face-down card'}">
+      <div class="mb-inner"><div class="mb-face mb-front">?</div><div class="mb-face mb-back">${c.v}</div></div></button>`).join('')}</div>
+    <div class="try-done">${done ? '🎉 Well done! That is one CogniMente exercise.' : ''}</div>
+    ${done ? '<button class="try-reset" id="mini-reset">Play again</button>' : ''}
+  </div>`
+}
+function flipMini(i) {
+  const m = S.mini, c = m.cards[i]
+  if (m.locked || c.flipped || c.matched) return
+  c.flipped = true; m.sel.push(i)
+  if (m.sel.length === 2) {
+    const [a, b] = m.sel.map(k => m.cards[k])
+    if (a.v === b.v) { a.matched = b.matched = true; m.sel = []; m.found++ }
+    else { m.locked = true; setTimeout(() => { a.flipped = b.flipped = false; m.sel = []; m.locked = false; if (S.route === 'home') render() }, 800) }
+  }
+  render()
+}
+function reportMail() {
+  return `<div class="mail card">
+    <div class="mail-head"><strong>Margaret's week with CogniMente</strong><span>To: Anna Collins · Sunday, 8:00 AM</span></div>
+    <div class="mail-body">
+      <div class="mail-hi">Hi Anna, your mom had a great week 🌿</div>
+      <div class="mail-kpis">
+        <div class="mail-kpi"><b>6/7</b><span>days played</span></div>
+        <div class="mail-kpi"><b>84%</b><span>accuracy</span></div>
+        <div class="mail-kpi"><b>🙂</b><span>usual mood</span></div>
+      </div>
+      <div class="mail-bars" aria-hidden="true">${[40, 70, 55, 0, 80, 65, 95].map((h, i) => `<i class="${i === 6 ? 'now' : ''}" style="height:${Math.max(h, 6)}%"></i>`).join('')}</div>
+      <div class="mail-note">💡 Math accuracy went up 12% this week. She moved up to <strong>Medium</strong> in Quick Math.</div>
+    </div>
+  </div>`
+}
+
+/* ---------- Auth ---------- */
+function auth(kind) {
+  const up = kind === 'signup'
+  return `
+  <main class="auth-page wrap">
+    <form class="auth-card card fade-up" id="auth-form" novalidate>
+      <button type="button" class="auth-back" data-go="home">← Back to home</button>
+      <div class="logo auth-logo"><div class="logo-icon">🧠</div><span class="logo-text" style="font-size:1.4rem">CogniMente</span></div>
+      <h1 class="auth-title">${up ? 'Create a free account' : 'Welcome back!'}</h1>
+      <p class="auth-sub">${up ? 'Start your exercises today.' : 'Sign in to continue your exercises.'}</p>
+      ${up ? `<div class="field"><label class="label" for="a-name">Your name</label><input id="a-name" class="input-field" placeholder="e.g. Margaret Collins" value="Margaret Collins"></div>` : ''}
+      <div class="field"><label class="label" for="a-email">Email</label><input id="a-email" type="email" class="input-field" placeholder="you@email.com" value="margaret@example.com" autocomplete="off"></div>
+      <div class="field"><label class="label" for="a-pass">Password</label><input id="a-pass" type="password" class="input-field" placeholder="${up ? 'At least 6 characters' : '••••••••'}" autocomplete="off"></div>
+      <div id="a-error" hidden></div>
+      <button type="submit" class="btn-primary" id="a-submit">${up ? 'Create free account' : 'Sign in'}</button>
+      <p class="auth-switch">${up ? 'Already have an account?' : "Don't have an account?"} <button type="button" class="link" data-go="${up ? 'signin' : 'signup'}">${up ? 'Sign in' : 'Sign up for free'}</button></p>
+      <p class="auth-switch" style="font-size:.78rem">Demo: any password with 6+ characters works. Nothing is sent anywhere.</p>
+    </form>
+  </main>`
+}
+function bindAuth() {
+  const f = $('#auth-form'); if (!f) return
+  f.addEventListener('submit', e => {
+    e.preventDefault()
+    const up = S.route === 'signup'
+    const pass = $('#a-pass').value, email = $('#a-email').value.trim()
+    const err = $('#a-error')
+    let msg = ''
+    if (!email.includes('@')) msg = 'Enter a valid email address, like you@email.com.'
+    else if (pass.length < 6) msg = 'Your password needs at least 6 characters.'
+    if (msg) { err.hidden = false; err.className = 'auth-error shake'; err.textContent = msg; return }
+    const btn = $('#a-submit'); btn.disabled = true; btn.textContent = up ? 'Creating account...' : 'Signing in...'
+    setTimeout(() => {
+      S.user = { name: up ? ($('#a-name').value.trim() || 'Margaret Collins') : 'Margaret Collins', email }
+      go('dashboard')
+    }, 600)
+  })
+}
+
+/* ---------- Shell ---------- */
+function shell(content) {
+  const items = [['dashboard', 'Home', '🏠'], ['games', 'Games', '🎮'], ['health', 'Health', '💚'], ['family', 'Family', '👨‍👩‍👧'], ['progress', 'Progress', '📊']]
+  const gameRoutes = ['memory', 'math', 'faces', 'words']
+  const active = k => S.route === k || (k === 'games' && gameRoutes.includes(S.route))
+  return `
+  <header class="navbar wrap"><div class="navbar-in">
+    <button class="logo" data-go="dashboard" style="min-height:0"><div class="logo-icon">🧠</div><span class="logo-text">CogniMente</span></button>
+    <nav class="nb-links">${items.map(([k, l]) => `<button class="nb-link ${active(k) ? 'active' : ''}" data-go="${k}">${l}</button>`).join('')}</nav>
+    <div class="nb-user"><div class="avatar">${esc(firstName().charAt(0).toUpperCase())}</div>
+      <div><div class="nb-name">${esc(firstName())}</div><button class="nb-logout" data-go="home">Sign out</button></div></div>
+  </div></header>
+  <main class="app-main wrap">${content}<p class="proto-note">CogniMente prototype · example data, nothing is saved</p></main>
+  <nav class="nb-mobile">${items.map(([k, l, i]) => `<button class="nb-m-item ${active(k) ? 'active' : ''}" data-go="${k}"><span class="nb-m-icon">${i}</span><span class="nb-m-label">${l}</span></button>`).join('')}</nav>`
+}
+
+/* ---------- Dashboard ---------- */
+function dashboard() {
+  const s = summary(), best = bestScores()
+  const h = new Date().getHours()
+  const greeting = h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening'
+  return `<div class="stack">
+    <section class="dash-hero fade-up">
+      <div><p class="dash-greeting">${greeting} 👋</p><h1 class="dash-title">${esc(firstName())},<br>ready to exercise your mind?</h1></div>
+      <div class="streak pop"><span style="font-size:1.4rem">🔥</span><div><div class="streak-num">${s.streak}</div><div class="streak-label">day streak</div></div></div>
+    </section>
+    ${todayPlan()}
+    <div class="stats-3 fade-up" style="animation-delay:.08s">
+      <div class="stat card"><div class="stat-icon">🎮</div><div class="stat-val">${s.sessions}</div><div class="stat-label">Sessions</div></div>
+      <div class="stat card accent"><div class="stat-icon">⭐</div><div class="stat-val">${fmt(s.points)}</div><div class="stat-label">Total points</div></div>
+      <div class="stat card"><div class="stat-icon">🔥</div><div class="stat-val">${s.streak}</div><div class="stat-label">Days in a row</div></div>
+    </div>
+    <section class="fade-up" style="animation-delay:.14s;display:flex;flex-direction:column;gap:1rem">
+      <div class="section-label">Available games</div>
+      <div class="grid-2">
+        ${Object.entries(GAMES).map(([id, g]) => {
+          const b = best.find(x => x.game === id)
+          return `<button class="game-tile card" data-go="${g.route}">
+            <div class="gt-top"><span class="gt-icon">${g.icon}</span><span class="gt-tag">${g.tag}</span></div>
+            <div class="gt-name">${g.name}</div><div class="gt-desc">${g.short}</div>
+            ${b ? `<div class="gt-best">Best: ${b.score} pts</div>` : ''}<span class="arrow">→</span></button>`
+        }).join('')}
+      </div>
+    </section>
+    <div class="fade-up" style="animation-delay:.22s;display:flex;flex-direction:column;gap:10px">
+      <button class="row-card" data-go="health"><span class="rc-icon">💚</span><div><div class="rc-title">Log today's health</div><div class="rc-desc">Water, sleep, mood and movement</div></div><span class="arrow-in">→</span></button>
+      <button class="row-card" data-go="family"><span class="rc-icon">👨‍👩‍👧</span><div><div class="rc-title">My family</div><div class="rc-desc">Add photos and names</div></div><span class="arrow-in">→</span></button>
+    </div>
+    <div class="textsize card fade-up" style="animation-delay:.26s">
+      <div><div class="ts-label">Text size</div><div class="ts-sub">${TEXT_SIZES[S.textSize].name}. Easier reading on any screen.</div></div>
+      <div class="ts-opts" role="group" aria-label="Text size">${TEXT_SIZES.map((t, i) => `<button class="ts-opt ${i === S.textSize ? 'active' : ''}" data-ts="${i}" aria-pressed="${i === S.textSize}">${t.label}</button>`).join('')}</div>
+    </div>
+  </div>`
+}
+function todayPlan() {
+  const goal = 3
+  const today = S.history.filter(h => new Date(h.at).toDateString() === new Date().toDateString())
+  const done = Math.min(goal, today.length)
+  const playedIds = today.map(h => h.game)
+  const nextGame = ['math', 'word', 'face', 'memory'].find(id => !playedIds.includes(id)) || 'memory'
+  const g = GAMES[nextGame], diff = suggestDiff(nextGame)
+  const C = 2 * Math.PI * 32, off = C * (1 - done / goal)
+  return `<div class="today card fade-up" style="animation-delay:.05s">
+    <div class="ring"><svg viewBox="0 0 76 76" aria-hidden="true"><circle cx="38" cy="38" r="32" fill="none" stroke="var(--surface)" stroke-width="8"/><circle cx="38" cy="38" r="32" fill="none" stroke="var(--accent)" stroke-width="8" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${off}"/></svg><div class="ring-txt">${done}/${goal}</div></div>
+    <div><div class="today-label">Today's plan</div>
+      <div class="today-title">${done >= goal ? 'Daily goal complete! 🎉' : `Next up: ${g.icon} ${g.name}`}</div>
+      <div class="today-desc">${done >= goal ? 'Great job. Come back tomorrow to keep your streak.' : `${DIFF[diff]} level, picked from your recent results. About 3 minutes.`}</div></div>
+    ${done >= goal ? '' : `<button class="today-btn" data-go="${g.route}">Start</button>`}
+  </div>`
+}
+
+/* ---------- Games list ---------- */
+function gamesList() {
+  return `<div class="stack">
+    <div class="fade-up"><h1 class="page-title">🎮 Games</h1><p class="page-sub">Choose a game to begin. Each one exercises a different area of your mind.</p></div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      ${Object.values(GAMES).map((g, i) => `<button class="jogo-card card fade-up" style="animation-delay:${i * .07}s;--gc:${g.color}" data-go="${g.route}">
+        <div class="jogo-icon" style="background:${g.bg}">${g.icon}</div>
+        <div class="jogo-body"><div class="jogo-name">${g.name}</div><div class="jogo-desc">${g.long}</div>
+          <div class="chips">${g.tags.map(t => `<span class="chip" style="background:${g.bg};color:${g.color}">${t}</span>`).join('')}</div></div>
+        <span style="color:var(--gray-300);font-size:1.2rem">→</span></button>`).join('')}
+    </div>
+  </div>`
+}
+
+/* ---------- Game views ---------- */
+function gameView(id) {
+  const p = S.play, g = GAMES[id]
+  if (p.phase === 'pick') return picker(id)
+  if (p.phase === 'result') return result(id)
+  if (id === 'memory') return memoryBoard()
+  if (id === 'math') return mathBoard()
+  if (id === 'face') return faceBoard()
+  if (id === 'word') return wordBoard()
+}
+function picker(id) {
+  const g = GAMES[id], sug = suggestDiff(id)
+  const desc = { memory: 'Find every pair of matching pictures before time runs out.', math: 'Answer each sum before the timer ends.', face: 'Look at the photo and choose the right family member.', word: 'Find the missing letters to complete the word.' }[id]
+  return `<div class="stack fade-up" style="gap:1.4rem;max-width:620px;margin:0 auto">
+    <button class="back" data-go="games">← Back</button>
+    <div class="dp-header" style="background:${g.bg};border-color:${g.color}">
+      <div class="dp-icon">${g.icon}</div><h1 class="dp-title">${g.name}</h1><p class="dp-desc">${desc}</p></div>
+    <h2 style="font-size:1.5rem">Choose the difficulty</h2>
+    <div class="dp-levels">
+      ${LEVELS[id].map((l, i) => `<button class="dp-level fade-up" style="animation-delay:${i * .07}s;--lc:${g.color}" data-start="${l.key}">
+        <div class="dp-left"><span class="dp-badge" style="background:${g.bg};color:${g.color}">${DIFF[l.key]}</span><span class="dp-detail">${l.detail}</span>
+        ${l.key === sug ? '<span class="dp-suggest">Suggested for you</span>' : ''}</div>
+        <span style="color:${g.color};font-size:1.1rem">→</span></button>`).join('')}
+    </div>
+    ${id === 'face' ? `<p class="hint-text">Uses the ${S.family.length} people on your Family page.</p>` : ''}
+  </div>`
+}
+function timerHtml(sec) {
+  const m = String(Math.floor(sec / 60)).padStart(2, '0'), s = String(sec % 60).padStart(2, '0')
+  const urgent = sec <= 5 || (S.play.level.time > 30 && sec <= 15)
+  return `<div class="timer ${urgent ? 'urgent' : ''}" id="timer" aria-live="off">${urgent ? '⚠️' : '⏱️'} ${m}:${s}</div>`
+}
+function startCountdown(sec, onExpire) {
+  stopTimer()
+  S.play.left = sec
+  timerId = setInterval(() => {
+    S.play.left--
+    const t = $('#timer'); if (t) t.outerHTML = timerHtml(Math.max(0, S.play.left))
+    if (S.play.left <= 0) { stopTimer(); onExpire() }
+  }, 1000)
+}
+function startGame(id, diffKey) {
+  const level = LEVELS[id].find(l => l.key === diffKey)
+  if (id === 'face' && S.family.length < 2) { toast('Add at least 2 family members on the Family page first.'); return }
+  const p = S.play = { phase: 'playing', diff: diffKey, level, correct: 0, idx: 0, started: Date.now(), locked: false }
+  if (id === 'memory') {
+    const items = shuffle(MEMORY_ITEMS).slice(0, level.pairs)
+    p.cards = shuffle([...items, ...items]).map((v, i) => ({ i, v, flipped: false, matched: false }))
+    p.sel = []; p.total = level.pairs
+    render(); startCountdown(level.time, () => finishGame('memory'))
+    return
+  }
+  p.total = level.n
+  if (id === 'math') p.qs = Array.from({ length: level.n }, () => makeMath(diffKey))
+  if (id === 'face') p.qs = makeFaces(level)
+  if (id === 'word') p.qs = shuffle(WORDS).slice(0, level.n).map(w => makeWord(w, level.blanks))
+  render(); startQuestionTimer(id)
+}
+function startQuestionTimer(id) { startCountdown(S.play.level.time, () => answer(id, null)) }
+
+function makeMath(diff) {
+  let a, b, op, ans
+  const ops = diff === 'easy' ? ['+', '−'] : diff === 'medium' ? ['+', '−', '×'] : ['+', '−', '×', '÷']
+  op = ops[rand(0, ops.length - 1)]
+  const max = diff === 'easy' ? 10 : diff === 'medium' ? 20 : 50
+  if (op === '+') { a = rand(1, max); b = rand(1, max); ans = a + b }
+  if (op === '−') { a = rand(2, max); b = rand(1, a); ans = a - b }
+  if (op === '×') { a = rand(2, diff === 'medium' ? 9 : 12); b = rand(2, 9); ans = a * b }
+  if (op === '÷') { b = rand(2, 9); ans = rand(2, 10); a = b * ans }
+  const opts = new Set([ans])
+  while (opts.size < 4) { const d = ans + rand(-6, 6); if (d >= 0 && d !== ans) opts.add(d) }
+  return { expr: `${a} ${op} ${b}`, ans, opts: shuffle([...opts]) }
+}
+function makeFaces(level) {
+  const people = S.family
+  const qs = []
+  for (let i = 0; i < level.n; i++) {
+    const target = people[i % people.length]
+    const others = shuffle(people.filter(p => p.id !== target.id)).slice(0, Math.min(level.opts, people.length) - 1)
+    qs.push({ person: target, ans: target.name.split(' ')[0], opts: shuffle([target, ...others]).map(p => p.name.split(' ')[0]) })
+  }
+  return shuffle(qs)
+}
+function makeWord(entry, blanks) {
+  const w = entry.w
+  const idxs = shuffle([...Array(w.length).keys()].filter(i => i > 0)).slice(0, blanks).sort((a, b) => a - b)
+  const ans = idxs.map(i => w[i]).join('')
+  const alpha = 'ABCDEFGHIJKLMNOPRSTUVWY'
+  const opts = new Set([ans])
+  while (opts.size < 4) { let s = ''; for (let k = 0; k < blanks; k++) s += alpha[rand(0, alpha.length - 1)]; opts.add(s) }
+  return { word: w, hint: entry.hint, idxs, ans, opts: shuffle([...opts]) }
+}
+
+function topbar(id, label, sub) {
+  const g = GAMES[id], p = S.play
+  const pct = id === 'memory' ? (p.correct / p.total) * 100 : (p.idx / p.total) * 100
+  return `<div class="topbar"><div><div class="tb-title">${g.icon} ${label}</div><div class="tb-sub">${sub}</div></div>${timerHtml(p.left ?? p.level.time)}</div>
+    <div class="progress"><div class="progress-fill" style="width:${pct}%;background:${g.color}"></div></div>`
+}
+function feedbackHtml() {
+  const f = S.play.fb
+  if (!f) return `<div class="feedback"></div>`
+  return `<div class="feedback ${f.ok ? 'good' : 'bad'}">${f.ok ? 'Correct! Well done 👏' : f.timeout ? `Time's up. The answer was ${esc(f.ans)}.` : `Not quite. The answer was ${esc(f.ans)}.`}</div>`
+}
+function optClass(o) {
+  const f = S.play.fb; if (!f) return ''
+  if (String(o) === String(f.ans)) return 'good'
+  if (String(o) === String(f.pick)) return 'bad'
+  return ''
+}
+
+function memoryBoard() {
+  const p = S.play
+  return `<div class="play fade-up">
+    ${topbar('memory', 'Memory Match', `Pairs found: ${p.correct}/${p.total}`)}
+    <div class="mb-grid">${p.cards.map(c => `<button class="mb-card ${c.flipped || c.matched ? 'flipped' : ''} ${c.matched ? 'matched' : ''}" data-card="${c.i}" aria-label="${c.flipped || c.matched ? c.v : 'Face-down card'}">
+      <div class="mb-inner"><div class="mb-face mb-front">?</div><div class="mb-face mb-back">${c.v}</div></div></button>`).join('')}</div>
+    <p class="hint-text">Tap the cards to turn them over and find the matching pairs</p>
+  </div>`
+}
+function flipCard(i) {
+  const p = S.play, c = p.cards[i]
+  if (p.locked || c.flipped || c.matched) return
+  c.flipped = true; p.sel.push(i)
+  if (p.sel.length === 2) {
+    const [a, b] = p.sel.map(k => p.cards[k])
+    if (a.v === b.v) {
+      a.matched = b.matched = true; p.sel = []; p.correct++
+      if (p.correct === p.total) { render(); stopTimer(); setTimeout(() => finishGame('memory'), 600); return }
+    } else {
+      p.locked = true
+      setTimeout(() => { a.flipped = b.flipped = false; p.sel = []; p.locked = false; if (S.play === p) render() }, 900)
+    }
+  }
+  render()
+}
+
+function mathBoard() {
+  const p = S.play, q = p.qs[p.idx]
+  return `<div class="play fade-up">
+    ${topbar('math', 'Quick Math', `Question ${p.idx + 1} of ${p.total}`)}
+    <div class="math-card card pop"><div class="math-expr">${q.expr}</div><div class="math-eq">= ?</div></div>
+    <div class="opt-grid">${q.opts.map(o => `<button class="opt ${optClass(o)}" data-ans="${o}" ${p.fb ? 'disabled' : ''}>${o}</button>`).join('')}</div>
+    ${feedbackHtml()}
+  </div>`
+}
+function faceBoard() {
+  const p = S.play, q = p.qs[p.idx], per = q.person
+  return `<div class="play fade-up">
+    ${topbar('face', 'Who is this?', `Round ${p.idx + 1} of ${p.total}`)}
+    <div class="card pop" style="padding:1.2rem"><div class="face-photo" style="background:${per.bg}">${per.photo ? `<img src="${per.photo}" alt="Family member">` : per.emoji}</div></div>
+    <div class="opt-grid">${q.opts.map(o => `<button class="opt name ${optClass(o)}" data-ans="${esc(o)}" ${p.fb ? 'disabled' : ''}>${esc(o)}</button>`).join('')}</div>
+    ${feedbackHtml()}
+  </div>`
+}
+function wordBoard() {
+  const p = S.play, q = p.qs[p.idx], f = p.fb
+  let k = 0
+  const chars = q.word.split('').map((ch, i) => {
+    if (!q.idxs.includes(i)) return `<div class="word-char">${ch}</div>`
+    const shown = f ? (f.pick ? f.pick[k] : q.ans[k]) : '?'
+    const cls = f ? (f.ok ? 'filled-good' : 'filled-bad') : ''
+    k++
+    return `<div class="word-char blank ${cls}">${shown}</div>`
+  }).join('')
+  return `<div class="play fade-up">
+    ${topbar('word', 'Fill the Word', `Question ${p.idx + 1} of ${p.total}`)}
+    ${p.level.hint ? `<div class="word-hint"><strong>💡 Hint:</strong> ${q.hint}</div>` : ''}
+    <div class="word-card card pop"><div class="word-chars">${chars}</div></div>
+    <div class="opt-grid">${q.opts.map(o => `<button class="opt ${optClass(o)}" data-ans="${o}" ${p.fb ? 'disabled' : ''}>${o.split('').join(' ')}</button>`).join('')}</div>
+    ${feedbackHtml()}
+  </div>`
+}
+function answer(id, pick) {
+  const p = S.play; if (!p || p.fb || p.phase !== 'playing') return
+  stopTimer()
+  const q = p.qs[p.idx]
+  const ok = pick !== null && String(pick) === String(q.ans)
+  if (ok) p.correct++
+  p.fb = { ok, pick, ans: q.ans, timeout: pick === null }
+  render()
+  setTimeout(() => {
+    if (S.play !== p) return
+    p.fb = null; p.idx++
+    if (p.idx >= p.total) finishGame(id)
+    else { p.left = p.level.time; render(); startQuestionTimer(id) }
+  }, ok ? 800 : 1500)
+}
+function finishGame(id) {
+  stopTimer()
+  const p = S.play
+  const dur = Math.round((Date.now() - p.started) / 1000)
+  const acc = p.correct / p.total
+  const timeBonus = id === 'memory' ? Math.max(0, p.left || 0) * 2 : Math.max(0, p.total * p.level.time - dur)
+  const score = Math.round((p.correct * 80 + timeBonus) * MULT[p.diff])
+  S.history.unshift({ id: nextId++, game: id, diff: p.diff, score, correct: p.correct, total: p.total, dur, at: Date.now() })
+  S.play = { phase: 'result', score, correct: p.correct, total: p.total, acc, diff: p.diff }
+  render()
+  if (acc >= .8) confetti()
+}
+function result(id) {
+  const r = S.play, g = GAMES[id], acc = Math.round(r.acc * 100)
+  const emoji = acc >= 80 ? '🎉' : acc >= 50 ? '👏' : '💪'
+  const msg = acc >= 80 ? 'Excellent! You did really well!' : acc >= 50 ? 'Good job! Keep practising.' : "Keep going, you'll get better every time!"
+  const next = suggestDiff(id)
+  return `<div class="result card pop">
+    <div class="result-emoji">${emoji}</div>
+    <h1 class="result-title">Game over!</h1>
+    <p class="result-game">${g.icon} ${g.name} · ${DIFF[r.diff]}</p>
+    <p class="result-msg">${msg}</p>
+    <div class="result-stats">
+      <div><div class="rs-val">${r.score}</div><div class="rs-label">points</div></div><div class="rs-div"></div>
+      <div><div class="rs-val">${r.correct}/${r.total}</div><div class="rs-label">correct</div></div><div class="rs-div"></div>
+      <div><div class="rs-val">${acc}%</div><div class="rs-label">accuracy</div></div>
+    </div>
+    ${next !== r.diff ? `<p class="hint-text">🎯 Next time we suggest <strong>${DIFF[next]}</strong>.</p>` : ''}
+    <div class="result-actions">
+      <button class="btn-primary" id="again">Play again</button>
+      <button class="btn-outline" data-go="dashboard">Back to home</button>
+    </div>
+  </div>`
+}
+
+/* ---------- Health ---------- */
+function health() {
+  const h = S.health
+  const days = []
+  for (let d = 6; d >= 0; d--) days.push(new Date(now - d * DAY))
+  const week = [...h.week, [MOODS[h.mood][0], h.water]]
+  return `<div class="stack">
+    <div class="fade-up"><h1 class="page-title">💚 Today's health</h1><p class="page-sub">A quick check-in for body and mind. Your family sees this in the weekly report.</p></div>
+    <div class="health-grid">
+      <div class="h-card card fade-up"><div class="h-head"><span class="h-title">💧 Water</span><span class="h-val">${h.water} of 8 glasses</span></div>
+        <div class="glasses">${Array.from({ length: 8 }, (_, i) => `<button class="glass ${i < h.water ? 'full' : ''}" data-water="${i + 1}" aria-label="${i + 1} glasses"></button>`).join('')}</div></div>
+      <div class="h-card card fade-up" style="animation-delay:.05s"><div class="h-head"><span class="h-title">😴 Sleep</span><span class="h-val">${h.sleep >= 7 ? 'Well rested' : 'A bit short'}</span></div>
+        <div class="stepper"><button class="step-btn" data-sleep="-1" aria-label="Less sleep">−</button><span class="step-val">${h.sleep}h</span><button class="step-btn" data-sleep="1" aria-label="More sleep">+</button></div></div>
+      <div class="h-card card fade-up" style="animation-delay:.1s"><div class="h-head"><span class="h-title">How are you feeling?</span><span class="h-val">${MOODS[h.mood][1]}</span></div>
+        <div class="moods">${MOODS.map(([e, l], i) => `<button class="mood ${i === h.mood ? 'sel' : ''}" data-mood="${i}" aria-label="${l}">${e}</button>`).join('')}</div></div>
+      <div class="h-card card fade-up" style="animation-delay:.15s"><div class="h-head"><span class="h-title">🚶 Movement</span><span class="h-val">${h.moves.length ? h.moves.length + ' logged' : 'None yet'}</span></div>
+        <div class="move-opts">${MOVES.map(m => `<button class="move ${h.moves.includes(m) ? 'sel' : ''}" data-move="${m}">${m}</button>`).join('')}</div></div>
+    </div>
+    <section class="fade-up" style="animation-delay:.2s;display:flex;flex-direction:column;gap:1rem">
+      <div class="section-label">This week</div>
+      <div class="week">${days.map((d, i) => `<div class="day ${i === 6 ? 'today' : ''}"><div class="day-name">${d.toLocaleDateString('en-US', { weekday: 'short' })}</div><div class="day-mood">${week[i][0]}</div><div class="day-water">💧${week[i][1]}</div></div>`).join('')}</div>
+    </section>
+    <button class="btn-primary" id="save-health" style="max-width:320px">Save today's check-in</button>
+  </div>`
+}
+
+/* ---------- Family ---------- */
+function familyPage() {
+  const f = S.famForm
+  return `<div class="stack">
+    <div class="fam-head fade-up"><div><h1 class="page-title">👨‍👩‍👧 My Family</h1><p class="page-sub">Add family members with a photo to use in the Family Faces game.</p></div>
+      <button class="btn-add" id="toggle-form">${f ? '✕ Cancel' : '+ Add'}</button></div>
+    ${f ? `<form class="fam-form card fade-up" id="fam-form" novalidate>
+      <h2 style="font-size:1.5rem">New family member</h2>
+      <button type="button" class="photo-up" id="photo-btn">${f.photo ? `<img src="${f.photo}" alt="Preview">` : '<span>📷<br>Tap to add a photo</span>'}</button>
+      <input type="file" id="photo-input" accept="image/*" hidden>
+      <div class="field"><label class="label" for="f-name">Full name</label><input id="f-name" class="input-field" placeholder="e.g. Anna Collins" value="${esc(f.name)}"></div>
+      <div class="field"><label class="label" for="f-rel">Relationship</label><select id="f-rel" class="input-field">${RELATIONSHIPS.map(r => `<option ${r === f.rel ? 'selected' : ''}>${r}</option>`).join('')}</select></div>
+      ${f.error ? `<div class="auth-error shake">${f.error}</div>` : ''}
+      <button type="submit" class="btn-primary">Save family member</button>
+    </form>` : ''}
+    ${S.family.length === 0 ? `<div class="card" style="padding:3rem 1.5rem;text-align:center"><div style="font-size:3rem">👨‍👩‍👧</div><div style="font-weight:800">No family members yet</div><div class="page-sub" style="margin:0 auto">Tap “+ Add” to add your first family member with a photo.</div></div>` :
+    `<div class="fam-grid">${S.family.map((m, i) => `<div class="fam-card card fade-up" style="animation-delay:${i * .05}s">
+      <div class="fam-photo" style="background:${m.bg}">${m.photo ? `<img src="${m.photo}" alt="${esc(m.name)}">` : m.emoji}</div>
+      <div><div class="fam-name">${esc(m.name)}</div><div class="fam-rel">${esc(m.relationship)}</div></div>
+      ${S.confirmDel === m.id ? `<div class="confirm-row"><button class="cr-yes" data-del-yes="${m.id}">Remove</button><button class="cr-no" data-del-no>Keep</button></div>` : `<button class="fam-del" data-del="${m.id}" aria-label="Remove ${esc(m.name)}">Remove</button>`}
+    </div>`).join('')}</div>`}
+  </div>`
+}
+
+/* ---------- Progress ---------- */
+function progress() {
+  const s = summary(), tab = S.progressTab
+  const best = bestScores()
+  const items = tab === 'best' ? best : S.history
+  return `<div class="stack">
+    <div class="fade-up"><h1 class="page-title">📊 My Progress</h1><p class="page-sub">Follow your progress in every game.</p></div>
+    <div class="stats-3 fade-up" style="animation-delay:.06s">
+      <div class="stat card"><div class="stat-icon">🔥</div><div class="stat-val">${s.streak}</div><div class="stat-label">days in a row</div></div>
+      <div class="stat card accent"><div class="stat-icon">⭐</div><div class="stat-val">${fmt(s.points)}</div><div class="stat-label">total points</div></div>
+      <div class="stat card"><div class="stat-icon">🎮</div><div class="stat-val">${s.sessions}</div><div class="stat-label">sessions</div></div>
+    </div>
+    ${weeklyChart()}
+    <div class="report-card card fade-up" style="animation-delay:.12s">
+      <span style="font-size:1.6rem">💌</span>
+      <div class="rc-body"><div class="rc-title">Weekly family report</div><div class="rc-desc">Next report goes to Anna and Mark on Sunday at 8:00 AM.</div></div>
+      <button class="btn-small" id="preview-report">Preview report</button>
+    </div>
+    <div id="report-preview" hidden>${reportMail()}</div>
+    <div class="tabs fade-up"><button class="tab ${tab === 'best' ? 'active' : ''}" data-tab="best">🏆 Best scores</button><button class="tab ${tab === 'history' ? 'active' : ''}" data-tab="history">📋 History</button></div>
+    <div class="list">${items.map((h, i) => {
+      const g = GAMES[h.game]
+      const date = new Date(h.at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+      const dur = h.dur > 60 ? `${Math.floor(h.dur / 60)}m ${h.dur % 60}s` : `${h.dur}s`
+      return `<div class="li card fade-up" style="animation-delay:${i * .03}s">
+        <div class="li-icon" style="background:${g.bg}">${g.icon}</div>
+        <div class="li-body"><div class="li-name">${g.name} · <span style="font-weight:600;color:var(--text-muted)">${DIFF[h.diff]}</span></div>
+          <div class="li-meta">${tab === 'best' ? `${Math.round(h.correct / h.total * 100)}% accuracy` : `${date} · ${dur} · ${h.correct}/${h.total} correct`}</div></div>
+        <div class="li-right"><div class="li-score" style="color:${g.color}">${h.score} pts</div></div></div>`
+    }).join('')}</div>
+  </div>`
+}
+function weeklyChart() {
+  const days = []
+  for (let d = 6; d >= 0; d--) {
+    const date = new Date(now - d * DAY)
+    const pts = S.history.filter(h => new Date(h.at).toDateString() === date.toDateString()).reduce((a, h) => a + h.score, 0)
+    days.push({ label: date.toLocaleDateString('en-US', { weekday: 'short' }), pts })
+  }
+  const max = Math.max(1000, Math.ceil(Math.max(...days.map(d => d.pts)) / 500) * 500)
+  const W = 560, H = 190, L = 40, B = 26, T = 14, bw = (W - L) / 7
+  const y = v => T + (H - T - B) * (1 - v / max)
+  const ticks = [0, max / 2, max]
+  return `<div class="chart-card card fade-up" style="animation-delay:.1s">
+    <div class="chart-head"><span class="chart-title">Points this week</span><span class="chart-note">${fmt(days.reduce((a, d) => a + d.pts, 0))} pts in 7 days</span></div>
+    <div class="chart"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Bar chart of points per day this week">
+      ${ticks.map(t => `<line x1="${L}" x2="${W}" y1="${y(t)}" y2="${y(t)}" stroke="var(--gray-200)" stroke-width="1"/><text x="${L - 8}" y="${y(t) + 4}" text-anchor="end" font-size="11" fill="var(--text-muted)" font-family="Inter, sans-serif">${fmt(t)}</text>`).join('')}
+      ${days.map((d, i) => {
+        const x = L + i * bw + bw * .22, w = bw * .56, top = y(d.pts)
+        return `<rect x="${x}" y="${top}" width="${w}" height="${Math.max(0, H - B - top)}" rx="6" fill="${i === 6 ? 'var(--accent)' : 'var(--gray-300)'}"/>
+          ${d.pts ? `<text x="${x + w / 2}" y="${top - 5}" text-anchor="middle" font-size="11" font-weight="700" fill="var(--text-secondary)" font-family="Inter, sans-serif">${d.pts}</text>` : ''}
+          <text x="${x + w / 2}" y="${H - 6}" text-anchor="middle" font-size="11" font-weight="600" fill="${i === 6 ? 'var(--ink)' : 'var(--text-muted)'}" font-family="Inter, sans-serif">${i === 6 ? 'Today' : d.label}</text>`
+      }).join('')}
+    </svg></div></div>`
+}
+
+/* ---------- Events after render ---------- */
+function afterRender() {
+  bindAuth()
+  const r = S.route
+  document.querySelectorAll('[data-start]').forEach(b => b.onclick = () => startGame({ memory: 'memory', math: 'math', faces: 'face', words: 'word' }[r], b.dataset.start))
+  document.querySelectorAll('[data-card]').forEach(b => b.onclick = () => flipCard(+b.dataset.card))
+  document.querySelectorAll('[data-ans]').forEach(b => b.onclick = () => answer({ math: 'math', faces: 'face', words: 'word' }[r], b.dataset.ans))
+  const again = $('#again'); if (again) again.onclick = () => { S.play = { phase: 'pick' }; render() }
+
+  document.querySelectorAll('[data-water]').forEach(b => b.onclick = () => { const v = +b.dataset.water; S.health.water = S.health.water === v ? v - 1 : v; render() })
+  document.querySelectorAll('[data-sleep]').forEach(b => b.onclick = () => { S.health.sleep = Math.min(12, Math.max(0, S.health.sleep + +b.dataset.sleep)); render() })
+  document.querySelectorAll('[data-mood]').forEach(b => b.onclick = () => { S.health.mood = +b.dataset.mood; render() })
+  document.querySelectorAll('[data-move]').forEach(b => b.onclick = () => { const m = b.dataset.move, a = S.health.moves; S.health.moves = a.includes(m) ? a.filter(x => x !== m) : [...a, m]; render() })
+  const sh = $('#save-health'); if (sh) sh.onclick = () => toast("Saved. Today's check-in is in your weekly report.")
+
+  document.querySelectorAll('[data-mini]').forEach(b => b.onclick = () => flipMini(+b.dataset.mini))
+  const mr = $('#mini-reset'); if (mr) mr.onclick = () => { S.mini = null; render() }
+  document.querySelectorAll('[data-ts]').forEach(b => b.onclick = () => { S.textSize = +b.dataset.ts; render() })
+  const pr = $('#preview-report'); if (pr) pr.onclick = () => { const r = $('#report-preview'); r.hidden = !r.hidden; pr.textContent = r.hidden ? 'Preview report' : 'Hide preview' }
+  document.querySelectorAll('[data-tab]').forEach(b => b.onclick = () => { S.progressTab = b.dataset.tab; render() })
+
+  const tf = $('#toggle-form'); if (tf) tf.onclick = () => { S.famForm = S.famForm ? null : { name: '', rel: RELATIONSHIPS[0], photo: null, error: '' }; render() }
+  const pb = $('#photo-btn'), pi = $('#photo-input')
+  if (pb && pi) {
+    pb.onclick = () => pi.click()
+    pi.onchange = () => {
+      const file = pi.files[0]; if (!file) return
+      const fr = new FileReader()
+      fr.onload = () => { syncFamForm(); S.famForm.photo = fr.result; render() }
+      fr.readAsDataURL(file)
+    }
+  }
+  const ff = $('#fam-form')
+  if (ff) ff.onsubmit = e => {
+    e.preventDefault(); syncFamForm()
+    const f = S.famForm
+    if (!f.name.trim()) f.error = "Enter the family member's name."
+    else if (!f.photo) f.error = 'Add a photo of the family member.'
+    else {
+      S.family.unshift({ id: nextId++, name: f.name.trim(), relationship: f.rel, photo: f.photo, bg: 'var(--gray-100)' })
+      S.famForm = null; render(); toast(`${f.name.trim().split(' ')[0]} was added to your family.`); return
+    }
+    render()
+  }
+  document.querySelectorAll('[data-del]').forEach(b => b.onclick = () => { S.confirmDel = +b.dataset.del; render() })
+  document.querySelectorAll('[data-del-yes]').forEach(b => b.onclick = () => { S.family = S.family.filter(m => m.id !== +b.dataset.delYes); S.confirmDel = null; render() })
+  document.querySelectorAll('[data-del-no]').forEach(b => b.onclick = () => { S.confirmDel = null; render() })
+}
+function syncFamForm() {
+  const n = $('#f-name'), r = $('#f-rel')
+  if (n) S.famForm.name = n.value
+  if (r) S.famForm.rel = r.value
+  S.famForm.error = ''
+}
+
+/* ---------- Boot ---------- */
+const VALID = ['home', 'signin', 'signup', ...APP_ROUTES]
+const initial = (location.hash || '').slice(1)
+go(VALID.includes(initial) ? initial : 'home')
+</script>

@@ -2,29 +2,32 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Grid3x3 } from 'lucide-react'
 import { api, MemoryConfig } from '@/lib/api'
+import { GAMES, toast } from '@/lib/games'
 import DifficultyPicker from '@/components/games/DifficultyPicker'
 import GameResult from '@/components/games/GameResult'
 import MemoryBoard from '@/components/games/MemoryBoard'
 
 type Phase = 'pick' | 'playing' | 'result'
+const game = GAMES.memory
 
 export default function MemoriaPage() {
   const router = useRouter()
   const [phase, setPhase] = useState<Phase>('pick')
+  const [difficulty, setDifficulty] = useState('')
   const [config, setConfig] = useState<MemoryConfig | null>(null)
   const [result, setResult] = useState<{ score: number; correct: number; total: number } | null>(null)
   const [loading, setLoading] = useState(false)
 
-  const start = async (difficulty: string) => {
+  const start = async (diff: string) => {
     setLoading(true)
     try {
-      const cfg = await api.games.memory.start(difficulty)
+      const cfg = await api.games.memory.start(diff)
+      setDifficulty(diff)
       setConfig(cfg)
       setPhase('playing')
-    } catch (e) {
-      alert('Erro ao iniciar jogo. Tente novamente.')
+    } catch {
+      toast('Erro ao iniciar o jogo. Tente novamente.')
     } finally {
       setLoading(false)
     }
@@ -42,25 +45,22 @@ export default function MemoriaPage() {
 
   if (phase === 'pick') return (
     <DifficultyPicker
-      icon={Grid3x3} title="Jogo da Memória"
+      game={game}
       desc="Encontre todos os pares de figuras iguais antes do tempo acabar."
-      color="var(--memory-color)" bg="var(--memory-bg)"
       loading={loading} onSelect={start} onBack={() => router.push('/jogos')}
       levels={[
-        { key: 'easy',   label: 'Fácil',  detail: '4 pares · 2 minutos' },
-        { key: 'medium', label: 'Médio',  detail: '6 pares · 90 segundos' },
-        { key: 'hard',   label: 'Difícil', detail: '8 pares · 60 segundos' },
+        { key: 'easy', label: 'Fácil', detail: '4 pares · 2 minutos' },
+        { key: 'medium', label: 'Médio', detail: '6 pares · 90 segundos' },
+        { key: 'hard', label: 'Difícil', detail: '8 pares · 60 segundos' },
       ]}
     />
   )
 
-  if (phase === 'playing' && config) return (
-    <MemoryBoard config={config} onFinish={finish} />
-  )
+  if (phase === 'playing' && config) return <MemoryBoard config={config} onFinish={finish} />
 
   if (phase === 'result' && result) return (
     <GameResult
-      icon={Grid3x3} title="Jogo da Memória"
+      game={game} difficulty={difficulty}
       score={result.score} correct={result.correct} total={result.total}
       onPlayAgain={() => setPhase('pick')}
       onHome={() => router.push('/dashboard')}
