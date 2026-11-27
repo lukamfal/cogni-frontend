@@ -7,7 +7,7 @@ import { TEXT_SIZES, usePreferences } from '@/hooks/usePreferences'
 import LogoIcon from '@/components/LogoIcon'
 
 // The how-to step that best sums up each game in one line.
-const KEY_STEP = { memory: 1, math: 1, face: 2, word: 2 } as const
+const KEY_STEP = { memory: 1, math: 1, face: 2, word: 2, race: 1, tug: 3 } as const
 
 const doneKey =(userId: number) => `cogni_tutorial_done_${userId}`
 
@@ -75,7 +75,7 @@ export default function Tutorial({ userId, firstName, startHref }: Props) {
       ),
     },
     {
-      title: 'Os 4 jogos',
+      title: `Os ${GAME_LIST.length} jogos`,
       body: (
         <div className="tut-games">
           {GAME_LIST.map(g => (

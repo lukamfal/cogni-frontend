@@ -43,7 +43,7 @@ export default function LandingPage() {
               <Link href="/entrar" className="btn-ghost">Já tenho conta</Link>
             </div>
             <div className="l-stats fade-up" style={{ animationDelay: '.28s' }}>
-              {[['4', 'jogos cognitivos'], ['3', 'níveis de dificuldade'], ['100%', 'gratuito']].map(([v, l]) => (
+              {[[String(GAME_LIST.length), 'jogos cognitivos'], ['3', 'níveis de dificuldade'], ['100%', 'gratuito']].map(([v, l]) => (
                 <div key={l}><div className="l-stat-val">{v}</div><div className="l-stat-label">{l}</div></div>
               ))}
             </div>
@@ -55,7 +55,7 @@ export default function LandingPage() {
       <section className="wrap">
         <div className="l-section">
           <div className="tag">Os jogos</div>
-          <h2 className="l-h2">4 jogos para estimular<br />cada área da mente</h2>
+          <h2 className="l-h2">{GAME_LIST.length} jogos para estimular<br />cada área da mente</h2>
           <div className="grid-2">
             {GAME_LIST.map((g, i) => (
               <div key={g.id} className="l-game card fade-up" style={{ animationDelay: `${i * 0.07}s` }}>

@@ -52,6 +52,19 @@ export const api = {
 
   // ── Games ──────────────────────────────────────────
   games: {
+    race: {
+      start: (difficulty: string) =>
+        request<RaceConfig>('/games/race/start', { method: 'POST', body: JSON.stringify({ game_type: 'race', difficulty }) }),
+      finish: (session_id: number, data: FinishPayload) =>
+        request<GameSession>(`/games/race/finish/${session_id}`, { method: 'POST', body: JSON.stringify(data) }),
+    },
+    tug: {
+      start: (difficulty: string) =>
+        request<TugConfig>('/games/tug/start', { method: 'POST', body: JSON.stringify({ game_type: 'tug', difficulty }) }),
+      finish: (session_id: number, data: FinishPayload) =>
+        request<GameSession>(`/games/tug/finish/${session_id}`, { method: 'POST', body: JSON.stringify(data) }),
+    },
+
     suggestDifficulty: (game_type: string) =>
       request<{ suggested_difficulty: string }>(`/games/suggest-difficulty/${game_type}`),
 
@@ -154,6 +167,9 @@ export const api = {
 
 // ── Types ─────────────────────────────────────────────
 export type Role = 'elder' | 'caregiver'
+
+export interface RaceConfig { session_id: number; rounds: number; opponents: number; cpu_min_ms: number; cpu_max_ms: number }
+export interface TugConfig { session_id: number; target_clicks: number; time_limit_seconds: number; countdown_seconds: number }
 
 export type Mood = 'great' | 'good' | 'neutral' | 'bad' | 'awful'
 

@@ -23,6 +23,8 @@
   --math-color: #b5602a;   --math-bg: #f8e9d8;
   --face-color: #a84a72;   --face-bg: #f5e3e6;
   --word-color: #1a6b3c;   --word-bg: #e3eedd;
+  --race-color: #b8432f;   --race-bg: #f7e3dc;
+  --tug-color: #6a4fb3;    --tug-bg: #ebe4f6;
   --good: #1a7f45; --good-bg: #e3f1e2;
   --bad: #b91c1c;  --bad-bg: #fbecea; --bad-border: #f0a8a0;
   --hint-bg: #fbf2d9; --hint-border: #ead391;
@@ -40,6 +42,7 @@
   --accent: #5cc488; --accent-mid: #74d29b; --accent-light: #18291e; --nav-bg: rgba(15,20,17,0.9);
   --memory-color: #7aa7f0; --memory-bg: #17223a; --math-color: #e89a5f; --math-bg: #2e1f13;
   --face-color: #e584ad; --face-bg: #301a24; --word-color: #5cc488; --word-bg: #18291e;
+  --race-color: #f08a74; --race-bg: #33201b; --tug-color: #b39bf0; --tug-bg: #251f36;
   --good: #5fd08f; --good-bg: #133020; --bad: #f87171; --bad-bg: #2d1414; --bad-border: #7f2a2a;
   --hint-bg: #2a2410; --hint-border: #5c4d1a; --shadow: 0 2px 14px rgba(0,0,0,0.5);
   color-scheme: dark;
@@ -559,3 +562,39 @@ a.back { justify-content: flex-start; }
 .checkin-mood { width: auto; height: auto; padding: .5rem .6rem; display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 1.7rem; }
 .checkin-mood small { font-size: .68rem; font-weight: 600; color: var(--text-secondary); }
 .checkin-opt { flex-direction: row; justify-content: flex-start; font-weight: 700; padding: 1rem; }
+
+/* ---------- Corrida ---------- */
+.semaforo { display: flex; flex-direction: column; gap: 5px; background: #23282a; padding: 7px; border-radius: 14px; box-shadow: var(--shadow); }
+.luz { width: 22px; height: 22px; border-radius: 50%; opacity: .22; transition: opacity .15s, box-shadow .15s; }
+.luz.red { background: #e53935; } .luz.yellow { background: #fbc02d; } .luz.green { background: #2ecc71; }
+.luz.on { opacity: 1; box-shadow: 0 0 14px 3px currentColor; }
+.luz.red.on { color: #e53935; } .luz.yellow.on { color: #fbc02d; } .luz.green.on { color: #2ecc71; }
+.pista { position: relative; background: #4a4f4c; border-radius: var(--radius); padding: 10px 0; display: flex; flex-direction: column; gap: 6px; overflow: hidden; touch-action: manipulation; user-select: none; }
+.faixa { position: relative; height: 52px; border-bottom: 2px dashed rgba(255,255,255,.35); }
+.faixa:last-of-type { border-bottom: none; }
+.faixa.sua { background: rgba(255,255,255,.06); }
+.faixa-nome { position: absolute; left: 8px; top: 2px; font-size: .62rem; font-weight: 800; color: #fff; letter-spacing: .06em; text-transform: uppercase; opacity: .8; }
+.carro { position: absolute; left: 8px; bottom: 4px; width: 72px; transition-property: left; transition-timing-function: cubic-bezier(.35,.05,.35,1); }
+.carro.go { left: calc(100% - 92px); }
+.car-svg { width: 72px; height: 36px; display: block; filter: drop-shadow(0 2px 2px rgba(0,0,0,.35)); }
+.chegada { position: absolute; top: 0; bottom: 0; right: 14px; width: 12px; background: repeating-conic-gradient(#fff 0 25%, #111 0 50%) 0 0 / 12px 12px; opacity: .9; }
+.race-msg { text-align: center; font-weight: 700; min-height: 1.6em; font-size: 1.05rem; }
+.race-msg.go { color: var(--good); }
+.race-msg.bad { color: var(--bad); }
+.race-tap { min-height: 110px; border-radius: 20px; border: 3px dashed var(--gray-300); background: var(--surface); font-size: 1.15rem; font-weight: 800; color: var(--text-secondary); touch-action: manipulation; user-select: none; }
+.race-tap.green { background: #2ecc71; border: 3px solid #239b56; color: #fff; font-size: 2rem; }
+.race-tap:disabled { opacity: .6; }
+
+/* ---------- Cabo de guerra ---------- */
+.cabo { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 8px; padding: 1.2rem .8rem; }
+.cabo-lado { display: flex; flex-direction: column; align-items: center; font-size: .78rem; font-weight: 800; color: var(--text-secondary); }
+.cabo-pessoa { font-size: 2.2rem; }
+.cabo-arena { position: relative; height: 70px; }
+.corda { position: absolute; left: 0; right: 0; top: 50%; height: 10px; transform: translateY(-50%); border-radius: 6px; background: repeating-linear-gradient(60deg, #b08850 0 6px, #8a6634 6px 12px); }
+.cabo-marca { position: absolute; top: 8px; bottom: 8px; width: 3px; background: var(--tug-color); opacity: .5; border-radius: 2px; }
+.cabo-marca.esquerda { left: 14%; } .cabo-marca.direita { right: 14%; }
+.bandeira { position: absolute; top: 50%; transform: translate(-50%, -78%); font-size: 1.8rem; transition: left .18s ease-out; }
+.puxar { align-self: center; width: min(220px, 70vw); aspect-ratio: 1; border-radius: 50%; background: var(--gray-200); color: var(--text-muted); font-size: 1.9rem; font-weight: 900; touch-action: manipulation; user-select: none; box-shadow: var(--shadow); }
+.puxar.ativo { background: var(--tug-color); color: #fff; box-shadow: 0 8px 0 color-mix(in srgb, var(--tug-color) 60%, #000); }
+.puxar.ativo:active { transform: translateY(5px); box-shadow: 0 3px 0 color-mix(in srgb, var(--tug-color) 60%, #000); }
+.puxar-pop { display: inline-block; animation: pop .25s ease; }
